@@ -2,7 +2,7 @@
 Replication Package for "Studying the Difference Between Natural and Programming Language Corpora"
 
 # Basic Replication
-A description of how to quickly replicate the results of the paper can be found in EntropyModel/README.md
+A description of how to quickly replicate the results of the paper can be found in [EntropyModel/README.md](https://github.com/caseycas/CodeNLPReplication/blob/master/EntropyModel/README.md)
 
 # Detailed Replication
 Generating your own training/test corpora from the original files involves lexing, running tensorflow, kenlm, with a variety of pre- and post-processing to at various steps.  We are currently looking at cleaning up the code/providing instructions to allow replication of these steps.
