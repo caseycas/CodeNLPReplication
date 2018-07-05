@@ -11,11 +11,11 @@ To run these you will need to have R installed on your machine and it is also hi
 
 These scripts depend on many supporting R libraries - a script to install all needed libraries can be found here: 
 
-<TODO>
+(TODO)
 
 Second, you will need to download the final processed Zipf and model result data.  These are too large to be hosted on
 GitHub and can be found:
 
-<TODO Zipf Download> = Download and unzip to CodeNLPReplication/NgramData
+(TODO Zipf Download) = Download and unzip to CodeNLPReplication/NgramData
   
-<TODO Entropy Download> = Download and unzip to CodeNLPReplication/EntropyModel/data
+(TODO Entropy Download) = Download and unzip to CodeNLPReplication/EntropyModel/data
