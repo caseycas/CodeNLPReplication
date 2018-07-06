@@ -4,6 +4,7 @@
 #Note that running all of these sequentially will take a long time.
 #Run the script in a detached screen.
 
+
 #Natural Language Corpora
 sh run_english.sh
 sh run_german.sh
@@ -27,3 +28,6 @@ sh run_efl.sh
 
 #Specialized English
 sh run_specialEng.sh
+
+cp *log.txt ../EntropyModel/data/tmp/lstm_compare/lstm
+#cp *log.txt $1
