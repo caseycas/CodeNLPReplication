@@ -36,11 +36,6 @@ ngramMap["english_names"] = "eng/names"
 ngramMap["brown"] = "brown/full"
 ngramMap["brown_names"] = "brown/names"
 
-
-ngramMap["eng_all_parse_manual"] = "eng_parse_manual/simp_post"
-ngramMap["eng_all_parse_manual_full_type"] = "eng_parse_manual/full_type"
-ngramMap["java_ast"] = "djava/ast"
-
 ngramMap["scifi"] = "scifi/full"
 ngramMap["shakespeare"] = "shakespeare/full"
 ngramMap["nasa"] = "nasa/full"
@@ -51,8 +46,10 @@ ngramMap["CommitMessagesSmall"] = "commits/full"
 ngramMap["teccl"] = "teccl/full"
 ngramMap["gachon"] = "gachon/full"
 
-#TODO Tree Texts
-
+#The trees require special handling for the _text and _no_cap versions
+ngramMap["eng_all_parse_manual"] = "eng_parse_manual/simp_post"
+ngramMap["eng_all_parse_manual_full_type"] = "eng_parse_manual/full_type"
+ngramMap["java_ast"] = "djava/ast"
 
 
 #LSTM texts
@@ -77,10 +74,6 @@ lstmMap["brown"] = "brown_data"
 lstmMap["brown_names"] = "brown_names"
 
 
-lstmMap["eng_all_parse_manual"] = "eng_parse_manual"
-lstmMap["eng_all_parse_manual_full_type"] = "eng_parse_manual_full_type"
-lstmMap["java_ast"] = "djava/ast"
-
 lstmMap["scifi"] = "scifi"
 lstmMap["shakespeare"] = "shakespeare"
 lstmMap["nasa"] = "nasa"
@@ -92,7 +85,15 @@ lstmMap["teccl"] = "teccl"
 lstmMap["gachon"] = "gachon"
 
 
-#TODO tree texts
+#The trees require special handling for the _text and _no_cap versions
+lstmMap["eng_all_parse_manual"] = "eng_parse_manual"
+lstmMap["eng_all_parse_manual_full_type"] = "eng_parse_manual_full_type"
+lstmMap["java_ast"] = "djava_ast"
+
+
+#I think the text comparison was only for the simplified version (only need one copy of the text.
+treeTexts = ["eng_all_parse_manual", "java_ast"]
+treeNoCaps = ["java_ast"]
 
 
 #Create data directories set up script
@@ -101,19 +102,53 @@ with open("createDirs.sh", 'w') as f_setup:
     f_setup.write("mkdir -p %s\n\n" % (lstm_out))
     for src, dest in ngramMap.iteritems():
         f_setup.write("mkdir -p %s/%s\n" % (ngram_out, dest))
+        if(src in treeTexts): #if tree create the text version directory too
+            (head, tail) = os.path.split(dest) #Just make sure dest doesn't end in '/'
+            f_setup.write("mkdir -p %s/%s/text\n" % (ngram_out, head))
 
     f_setup.write("\n")
 
     for src, dest in lstmMap.iteritems():
         f_setup.write("mkdir -p %s/%s\n" % (lstm_out, dest))
+        if(src in treeTexts): #if tree create the text version directory too
+            f_setup.write("mkdir -p %s/%s_text\n" % (lstm_out, dest))
 
 with open("copyData.sh", 'w') as f_main:
     f_main.write("sh createDirs.sh\n\n")
     for src, dest in ngramMap.iteritems():
+        srcKey = src
         src = os.path.join(src_dir, src)
-        f_main.write("cp %s/train %s/test %s/valid %s\n" % (src, src, src, dest))
+        if(srcKey in treeNoCaps): #Need to use unbounded vocabulary in the ngram trees for kenlm to work.
+            f_main.write("cp %s/train_no_cap %s/train\n" % (src, dest))
+            f_main.write("cp %s/valid_no_cap %s/valid\n" % (src, dest))
+            f_main.write("cp %s/test_no_cap %s/test\n" % (src, dest))
+        else:
+            f_main.write("cp %s/train %s/test %s/valid %s\n" % (src, src, src, dest))
+
         #Fix Unk is necessary to run with kenlm. (Make sure to put it in the top level directory)
         f_main.write("python fixUnk.py %s\n\n" % (dest))
-    for src, dest in lstmMap.iteritems():
-        f_main.write("ln %s/train %s/test %s/valid %s\n" % (src, src, src, dest))
 
+        #Copy over the text version of the trees too
+        if(srcKey in treeTexts): 
+            (head, tail) = os.path.split(dest) #Just make sure dest doesn't end in '/'
+            if(srcKey in treeNoCaps): #Need to use unbounded vocabulary in the ngram trees for java for kenlm to work.
+                f_main.write("cp %s/train_no_cap_text %s/train\n" % (src, head))
+                f_main.write("cp %s/valid_no_cap_text %s/valid\n" % (src, head))
+                f_main.write("cp %s/test_no_cap_text %s/test\n" % (src, head))
+            else:
+                f_main.write("cp %s/train_text %s/train\n" % (src, head))
+                f_main.write("cp %s/valid_text %s/valid\n" % (src, head))
+                f_main.write("cp %s/test_text %s/test\n" % (src, head))
+
+
+            f_main.write("python fixUnk.py %s\n\n" % (head))
+
+    for src, dest in lstmMap.iteritems():
+        srcKey = src
+        src = os.path.join(src_dir, src)
+        f_main.write("ln %s/train %s/test %s/valid %s\n" % (src, src, src, dest))
+        #TODO: Copy over the text versions of the trees too.
+        if(srcKey in treeTexts): # create lstm text set up.
+            f_main.write("ln %s/train_text %s/train\n" % (src, dest))
+            f_main.write("ln %s/valid_text %s/valid\n" % (src, dest))
+            f_main.write("ln %s/test_text %s/test\n" % (src, dest))
