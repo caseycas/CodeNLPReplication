@@ -1,8 +1,16 @@
 import os
 import random
+import argparse
 
-files = ["train", "valid", "test"]
-dirs = ["./wsj", "./brown"]
+parser = argparse.ArgumentParser(description="Merge the components of the Penn Treebank corpora.") 
+parser.add_argument("target_dir", help = "Location of lexed Penn Treebank trees.", action="store", type=str)
+args = parser.parse_args()
+target_dir = args.target_dir
+
+
+files = [os.path.join(target_dir,"train"), os.path.join(target_dir,"valid"), os.path.join(target_dir,"test")]
+dirs = [os.path.join(target_dir,"wsj"), os.path.join("brown")]
+
 
 
 for next_file in files:
