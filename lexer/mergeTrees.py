@@ -8,8 +8,8 @@ args = parser.parse_args()
 target_dir = args.target_dir
 
 
-files = [os.path.join(target_dir,"train"), os.path.join(target_dir,"valid"), os.path.join(target_dir,"test")]
-dirs = [os.path.join(target_dir,"wsj"), os.path.join("brown")]
+files = ["train", "valid", "test"]
+dirs = [os.path.join(target_dir,"wsj"), os.path.join(target_dir,"brown")]
 
 
 
@@ -22,5 +22,5 @@ for next_file in files:
 
     random.shuffle(combinedFile)
 
-    with open(next_file, 'w') as f:
+    with open(os.path.join(target_dir,next_file), 'w') as f:
         [f.write(line) for line in combinedFile]

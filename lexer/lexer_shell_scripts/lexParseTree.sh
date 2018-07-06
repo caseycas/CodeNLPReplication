@@ -10,6 +10,8 @@ python ../cleanLexer.py ../../PennTreebank/Files/treebank_3/parsed/mrg/wsj/ *.mr
 #Merge the trees
 rm -r ../../LSTM_data/eng_all_parse_manual
 mkdir ../../LSTM_data/eng_all_parse_manual
+mkdir -p ../../LSTM_data/eng_all_parse_manual/brown
+mkdir -p ../../LSTM_data/eng_all_parse_manual/wsj
 cp ../../LSTM_data/brown_parse_manual/train ../../LSTM_data/brown_parse_manual/valid ../../LSTM_data/brown_parse_manual/test ../../LSTM_data/eng_all_parse_manual/brown
 cp ../../LSTM_data/wsj_parse_manual/train ../../LSTM_data/wsj_parse_manual/valid ../../LSTM_data/wsj_parse_manual/test ../../LSTM_data/eng_all_parse_manual/wsj
 python ../mergeTrees.py ../../LSTM_data/eng_all_parse_manual
