@@ -5,7 +5,7 @@ source(file="./EntropyModel/colorBlind.r")
 
 data_folder = "./EntropyModel/data/tmp/lstm_compare/"
 plot_folder = "./Plots/"
-effect_size_file = "./parse_tree_terminal_stats.txt"
+effect_size_file = "./EntropyModel/parse_tree_terminal_stats.txt"
 stats_out = file(effect_size_file, 'w')
 close(stats_out)
 
@@ -15,40 +15,35 @@ java_label = "Java_AST"
 
 source(file="./EntropyModel/LSTMHelperFunctions.r")
 
+#Read and filter the Englisth tree ngram/lstm data.  Assumes that the last column is the entropy from the lstm/ngram/etc.
 readAndFilterEngTree <- function(filename, col_names)
 {
   b = read.csv(filename, header=TRUE)
   colnames(b) = col_names
-  stopifnot(length(col_names) == 2)
+  stopifnot(ncol(b) == 3 || ncol(b) == 5)
   b$token = as.character(b$token)
-  b = b[b$token != "(" & b$token != ")" & b$token != "<eos>" & b$token != ")<eos>(",]
-  b = sqldf("SELECT * FROM b WHERE token not in ts")
-  b = b[!is.na(b[,col_names[2]]),]
-  print(summary(b[,col_names[2]]))
+  #b = b[b$token != "(" & b$token != ")" & b$token != "<eos>" & b$token != ")<eos>(",]
+  #b = sqldf("SELECT * FROM b WHERE token not in ts")
+  b = b[b$token_type == 'WORD' | b$token_type == 'STOPWORD' | b$token_type == 'PUNCT',]
+  b = b[complete.cases(b),]
+  print(summary(b[,col_names[ncol(b)]]))
   return(b)
 }
 
-readAndFilterJavaTree <- function(filename)
+#Read and filter the Java Tree ngram/lstm data.  Assumes that the last column is the entropy from the lstm/ngram/etc.
+readAndFilterJavaTree <- function(filename, col_names)
 {
+  #browser()
   j = read.csv(filename, header=TRUE)
-  colnames(j) = c("token", "lstm_entropy")
+  colnames(j) = col_names
+  stopifnot(ncol(j) == 3 || ncol(j) == 5)
   j$token <- as.character(j$token)
-  j = j[j$token != "(" & j$token != ")" & j$token != "<eos>"& j$token != ")<eos>(" & !startsWith(j$token, "#"),]
-  j = j[!is.na(j$lstm_entropy),]
-  print(summary(j$lstm_entropy))
+  jTest = j[j$token != "(" & j$token != ")" & j$token != "<eos>"& j$token != ")<eos>(" & !startsWith(j$token, "#"),]
+  j = j[j$token_type == 'WORD' | j$token_type == 'STOPWORD' | j$token_type == 'PUNCT',]
+  stopifnot(nrow(j) == nrow(jTest))
+  j = j[complete.cases(j),]
+  print(summary(j[,col_names[ncol(j)]]))
   return(j)
-}
-
-# Nonterminal Experiment
-# Load file (just lstm)
-# Remove parens and <eos>
-loadNTLinearizedTree <- function(data_folder, data_string, label)
-{
-  Lstm = read.csv(paste(data_folder, "lstm/", data_string, "_entropy.csv", sep = ""),header=TRUE)
-  colnames(Lstm) = c("token", "lstm_entropy")
-  ent =  Lstm[Lstm$token != "<eos>" & Lstm$token != ")<eos>(" & Lstm$token != "(" & Lstm$token != ")",]
-  ent$language = label
-  return(ent)
 }
 
 tag_set = c("ROOT","S", "SBAR", "SBARQ", "SINV", "SQ", "ADJP", "ADVP", "CONJP", "FRAG", "INTJ", "LST", "NAC", "NP", "NX", "PP",
@@ -60,13 +55,13 @@ tag_set = c("ROOT","S", "SBAR", "SBARQ", "SINV", "SQ", "ADJP", "ADVP", "CONJP", 
            "VBP|TO","PRP|VBP","IN|RP","NN|NNS","JJ|VBG","RB|RP","NN|VBG","JJ|RB","TYPO","NEG","AUX","VBD|VBN","EDITED","WHADVP")
 ts <- data.frame(tag_set)
 
-b <- readAndFilterEngTree("./EntropyModel/data/tmp/lstm_compare/lstm/eng_parse_manual_small_entropy.csv", c("token", "lstm_entropy"))
+b <- readAndFilterEngTree("./EntropyModel/data/tmp/lstm_compare/lstm/eng_parse_manual_simp_post_small_entropy_labelled.csv", c("token", "lstm_entropy", "token_type"))
 
-b_full <- readAndFilterEngTree("./EntropyModel/data/tmp/lstm_compare/lstm/eng_parse_manual_simp_post_smalllog.csv", c("token", "lstm_entropy"))
+b_full <- readAndFilterEngTree("./EntropyModel/data/tmp/lstm_compare/lstm/eng_parse_manual_full_type_small_entropy_labelled.csv", c("token", "lstm_entropy", "token_type"))
 
-bMed <- readAndFilterEngTree("./EntropyModel/data/tmp/lstm_compare/lstm/eng_parse_manual_med_entropy.csv", c("token", "lstm_entropy"))
+bMed <- readAndFilterEngTree("./EntropyModel/data/tmp/lstm_compare/lstm/eng_parse_manual_simp_post_med_entropy_labelled.csv", c("token", "lstm_entropy", "token_type"))
 
-bMed_full <- readAndFilterEngTree("./EntropyModel/data/tmp/lstm_compare/lstm/eng_parse_manual_simp_post_medlog.csv", c("token", "lstm_entropy"))
+bMed_full <- readAndFilterEngTree("./EntropyModel/data/tmp/lstm_compare/lstm/eng_parse_manual_full_type_med_entropy_labelled.csv", c("token", "lstm_entropy", "token_type"))
 
 #Zero tokens
 print("Eng Simple Small 0 entropy tokens:")
@@ -81,27 +76,17 @@ print(print(nrow(bMed_full[bMed_full$lstm_entropy == 0,])/nrow(bMed_full)))
 stopifnot(nrow(b) == nrow(bMed))
 stopifnot(nrow(b_full) == nrow(bMed_full))
 
-b2 <- read.csv("./EntropyModel/data/tmp/lstm_compare/ngram/eng_parse_manual_labelled_no_cache_entropy.csv", header=FALSE)
-colnames(b2) <- c("file", "token_id", "token", "ngram_entropy", "token_type")
+b2 <- readAndFilterEngTree("./EntropyModel/data/tmp/lstm_compare/ngram/eng_parse_manual_simp_post_no_cache_entropy_labelled.csv", c("file", "id", "token", "ngram_entropy", "token_type"))
 b2$ngram_entropy <- -b2$ngram_entropy
 
-#Need to process another way
-#b2_full <- read.csv("./EntropyModel/data/tmp/lstm_compare/ngram/eng_parse_manual_simp_post_no_cache_entropy.csv", header=FALSE)
-#colnames(b2_full) <- c("file", "token_id", "token", "ngram_entropy", "token_type")
-#b2_full$ngram_entropy <- -b2_full$ngram_entropy
-
-b2_full <- readAndFilterEngTree("./EntropyModel/data/tmp/lstm_compare/ngram/eng_parse_manual_simp_post_no_cache_entropy.csv", c("token", "ngram_entropy"))
+b2_full <- readAndFilterEngTree("./EntropyModel/data/tmp/lstm_compare/ngram/eng_parse_manual_full_type_no_cache_entropy_labelled.csv", c("file", "id", "token", "ngram_entropy", "token_type"))
 b2_full$ngram_entropy <- -b2_full$ngram_entropy
 
-b3 <- read.csv("./EntropyModel/data/tmp/lstm_compare/ngram/eng_parse_manual_labelled_cache_entropy.csv", header=FALSE)
-colnames(b3) <- c("file", "token_id", "token", "cache_entropy", "token_type")
+b3 <- readAndFilterEngTree("./EntropyModel/data/tmp/lstm_compare/ngram/eng_parse_manual_simp_post_cache_entropy_labelled.csv", c("file", "id", "token", "cache_entropy", "token_type"))
 b3$cache_entropy <- -b3$cache_entropy
 
-#Need to process another way
-#b3_full <- read.csv("./EntropyModel/data/tmp/lstm_compare/ngram//eng_parse_manual_simp_post_cache_entropy.csv", header=FALSE)
-#colnames(b3_full) <- c("file", "token_id", "token", "cache_entropy", "token_type")
-#b3_full$cache_entropy <- -b3_full$cache_entropy
-b3_full <- readAndFilterEngTree("./EntropyModel/data/tmp/lstm_compare/ngram/eng_parse_manual_simp_post_cache_entropy.csv", c("token", "cache_entropy"))
+
+b3_full <- readAndFilterEngTree("./EntropyModel/data/tmp/lstm_compare/ngram/eng_parse_manual_full_type_cache_entropy_labelled.csv", c("file", "id", "token", "cache_entropy", "token_type"))
 b3_full$cache_entropy <- -b3_full$cache_entropy
 
 bMed$language <- eng_label_simp
@@ -113,7 +98,7 @@ b2_full$cache_entropy <- b3_full$cache_entropy
 b2$language <- eng_label_simp
 b2_full$language <- eng_label
 
-b_all <- b2[b2$token_type == 'WORD' | b2$token_type == 'STOPWORD' | b2$token_type == 'PUNCT',]
+b_all <- b2
 printWilcox(b_all$ngram_entropy, b_all$cache_entropy, "Eng Tokens in AST Simple (Ngram)", "Eng Tokens in AST Simple (Cache)", TRUE)
 printWilcox(b2_full$ngram_entropy, b2_full$cache_entropy, "Eng Tokens in AST Full (Ngram)", "Eng Tokens in AST Full (Cache)", TRUE)
 printWilcox(b_all$ngram_entropy, b2_full$ngram_entropy, "Eng Tokens in AST Simple (Ngram)", "Eng Tokens in AST Full (Ngram)", FALSE)
@@ -121,9 +106,9 @@ printWilcox(b_all$cache_entropy, b2_full$cache_entropy, "Eng Tokens in AST Simpl
 b_all_plot <- b_all[,c("token","ngram_entropy" ,"cache_entropy", "language")]
 b_all_full_plot <- b2_full[,c("token","ngram_entropy" ,"cache_entropy", "language")]
 
-j <- readAndFilterJavaTree("./EntropyModel/data/tmp/lstm_compare/lstm/djava_ast_small_entropy.csv")
+j <- readAndFilterJavaTree("./EntropyModel/data/tmp/lstm_compare/lstm/djava_ast_small_entropy_labelled.csv", c("token", "lstm_entropy", "token_type"))
 
-jMed <- readAndFilterJavaTree("./EntropyModel/data/tmp/lstm_compare/lstm/djava_ast_med_entropy.csv")
+jMed <- readAndFilterJavaTree("./EntropyModel/data/tmp/lstm_compare/lstm/djava_ast_med_entropy_labelled.csv", c("token", "lstm_entropy", "token_type"))
 
 print("Java Small 0 entropy tokens:")
 print(nrow(j[j$lstm_entropy == 0,])/nrow(j))
@@ -132,12 +117,10 @@ print(nrow(jMed[jMed$lstm_entropy == 0,])/nrow(jMed))
 
 stopifnot(nrow(j) == nrow(jMed))
 
-j2 <- read.csv("./EntropyModel/data/tmp/lstm_compare/ngram/djava_ast_labelled_small_no_cache_entropy.csv", header=FALSE)
-colnames(j2) <- c("file", "token_id", "token", "ngram_entropy", "token_type")
+j2 <- readAndFilterJavaTree("./EntropyModel/data/tmp/lstm_compare/ngram/djava_ast_small_no_cache_entropy_labelled.csv", c("file", "id", "token", "ngram_entropy", "token_type"))
 j2$ngram_entropy <- -j2$ngram_entropy
 
-j3 <- read.csv("./EntropyModel/data/tmp/lstm_compare/ngram/djava_ast_labelled_small_cache_entropy.csv", header=FALSE)
-colnames(j3) <- c("file", "token_id", "token", "cache_entropy", "token_type")
+j3 <- readAndFilterJavaTree("./EntropyModel/data/tmp/lstm_compare/ngram/djava_ast_small_cache_entropy_labelled.csv", c("file", "id", "token", "cache_entropy", "token_type"))
 j3$cache_entropy <- -j3$cache_entropy
 
 #Save j vs j3
@@ -151,7 +134,7 @@ j2$cache_entropy <- j3$cache_entropy
 j2$language <- java_label
 
 #Problem is this isn't directly comparable with brown again... (oh well)
-j_all <- j2[j2$token_type == 'WORD' | j2$token_type == 'STOPWORD' | j2$token_type == 'PUNCT',]
+j_all <- j2
 printWilcox(j_all$ngram_entropy, j_all$cache_entropy, "Java Tokens in AST (Ngram)", "Java Tokens in AST (Cache)", TRUE)
 j_all_plot <- j_all[,c("token", "ngram_entropy" ,"cache_entropy",  "language")]
 
@@ -168,10 +151,12 @@ colnames(b_all_full_plot)<- c("token", "ngram_entropy" ,"cache_entropy",  "langu
 #Full comparison
 bc_full_compare <- rbind(j_all_plot, b_all_plot, b_all_full_plot)
 #drawNgramBoxplot(bc_full_compare, "Brown Parse, Java AST All Tokens (Ngram)", "7-gram Entropy", "./Plots/JavaVsBrownTreeBoxplot(7grams).eps")
-drawNgramBoxplot(bc_full_compare, "", "7-gram Entropy", "./Plots/JavaVsBrownTreeBoxplot(7grams).eps")
+drawNgramBoxplot(bc_full_compare, "", "7-gram Entropy", "./Plots/JavaVsBrownTreeBoxplot(7grams).tiff")
+drawNgramBoxplot(bc_full_compare, "", "7-gram Entropy", "./Plots/JavaVsBrownTreeBoxplot(7grams).png")
 
 #drawCacheBoxplot(bc_full_compare, "Brown Parse, Java AST All Tokens (Cache)", "7-gram 10 Cache Entropy", "./Plots/JavaVsBrownTreeBoxplot(7grams10Cache).eps")
-drawCacheBoxplot(bc_full_compare, "", "7-gram 10 Cache Entropy", "./Plots/JavaVsBrownTreeBoxplot(7grams10Cache).eps")
+drawCacheBoxplot(bc_full_compare, "", "7-gram 10 Cache Entropy", "./Plots/JavaVsBrownTreeBoxplot(7grams10Cache).tiff")
+drawCacheBoxplot(bc_full_compare, "", "7-gram 10 Cache Entropy", "./Plots/JavaVsBrownTreeBoxplot(7grams10Cache).png")
 
 stopifnot(nrow(b) == nrow(bMed))
 stopifnot(nrow(b_full) == nrow(bMed_full))
@@ -183,15 +168,19 @@ bc_lstm_compare <- rbind(j, b, b_full)
 #drawLSTMBoxplot(bc_lstm_compare, "English Parse, Java AST All Tokens (LSTM Small)", "LSTM Entropy (Small)", "./Plots/JavaVsBrownTreeBoxplotNoCap(LSTM).eps")
 #drawLSTMBoxplotCapped(bc_lstm_compare, "English Parse, Java AST All Tokens (LSTM Small)", "LSTM Entropy (Small)", "./Plots/JavaVsBrownTreeBoxplot(LSTM).eps")
 
-drawLSTMBoxplot(bc_lstm_compare, "", "LSTM Entropy (Small)", "./Plots/JavaVsBrownTreeBoxplotNoCap(LSTM).eps")
-drawLSTMBoxplotCapped(bc_lstm_compare, "", "LSTM Entropy (Small)", "./Plots/JavaVsBrownTreeBoxplot(LSTM).eps")
+drawLSTMBoxplot(bc_lstm_compare, "", "LSTM Entropy (Small)", "./Plots/JavaVsBrownTreeBoxplotNoCap(LSTM).tiff")
+drawLSTMBoxplot(bc_lstm_compare, "", "LSTM Entropy (Small)", "./Plots/JavaVsBrownTreeBoxplotNoCap(LSTM).png")
+drawLSTMBoxplotCapped(bc_lstm_compare, "", "LSTM Entropy (Small)", "./Plots/JavaVsBrownTreeBoxplot(LSTM).tiff")
+drawLSTMBoxplotCapped(bc_lstm_compare, "", "LSTM Entropy (Small)", "./Plots/JavaVsBrownTreeBoxplot(LSTM).png")
 
 bc_lstm_compare_med <- rbind(jMed, bMed, bMed_full)
 #drawLSTMBoxplot(bc_lstm_compare_med, "English Parse, Java AST All Tokens (LSTM Medium)", "LSTM Entropy (Medium)", "./Plots/JavaVsBrownTreeBoxplotNoCapMed(LSTM).eps")
 #drawLSTMBoxplotCapped(bc_lstm_compare_med, "English Parse, Java AST All Tokens (LSTM Medium)", "LSTM Entropy (Medium)", "./Plots/JavaVsBrownTreeBoxplotMed(LSTM).eps")
 
-drawLSTMBoxplot(bc_lstm_compare_med, "", "LSTM Entropy (Medium)", "./Plots/JavaVsBrownTreeBoxplotNoCapMed(LSTM).eps")
-drawLSTMBoxplotCapped(bc_lstm_compare_med, "", "LSTM Entropy (Medium)", "./Plots/JavaVsBrownTreeBoxplotMed(LSTM).eps")
+drawLSTMBoxplot(bc_lstm_compare_med, "", "LSTM Entropy (Medium)", "./Plots/JavaVsBrownTreeBoxplotNoCapMed(LSTM).tiff")
+drawLSTMBoxplot(bc_lstm_compare_med, "", "LSTM Entropy (Medium)", "./Plots/JavaVsBrownTreeBoxplotNoCapMed(LSTM).png")
+drawLSTMBoxplotCapped(bc_lstm_compare_med, "", "LSTM Entropy (Medium)", "./Plots/JavaVsBrownTreeBoxplotMed(LSTM).tiff")
+drawLSTMBoxplotCapped(bc_lstm_compare_med, "", "LSTM Entropy (Medium)", "./Plots/JavaVsBrownTreeBoxplotMed(LSTM).png")
 
 
 printWilcox(j_all_plot$ngram_entropy, b_all_plot$ngram_entropy, "Java Tokens in Const. Parse (Ngram)", "Eng Tokens in Const. Parse Simple (Ngram)", FALSE)
@@ -269,42 +258,4 @@ jt$cache_entropy <- jt3$cache_entropy
 printWilcox(jt$ngram_entropy, bt$ngram_entropy, "Java Text Tokens (Ngram)", "Eng Text Tokens (Ngram)", FALSE)
 printWilcox(jt$cache_entropy, bt$cache_entropy, "Java Text Tokens (Cache)", "Eng Text Tokens (Cache)", FALSE)
 printWilcox(jt$lstm_entropy, bt$lstm_entropy, "Java Text Tokens (lstm)", "Eng Text Tokens (lstm)", FALSE)
-#Todo Medium text version (once we are more confident in correctness...)
 printWilcox(jtMed$lstm_entropy, btMed$lstm_entropy, "Java Text Tokens (lstm med)", "Eng Text Tokens (lstm med)", FALSE)
-
-
-
-#Density plot comparisons
-
-
-# eng_s_nt <- loadNTLinearizedTree(data_folder, "eng_parse_manual_small_nt", eng_label_simp)
-# eng_nt <- loadNTLinearizedTree(data_folder, "eng_parse_manual_full_small_nt", eng_label)
-# java_nt <- loadNTLinearizedTree(data_folder, "djava_ast_small_nt", java_label)
-# 
-# engMed_s_nt <- loadNTLinearizedTree(data_folder, "eng_parse_manual_med_nt", eng_label_simp)
-# engMed_nt <- loadNTLinearizedTree(data_folder, "eng_parse_manual_full_med_nt", eng_label)
-# javaMed_nt <- loadNTLinearizedTree(data_folder, "djava_ast_med_nt", java_label)
-# 
-# stopifnot(nrow(eng_s_nt) == nrow(engMed_s_nt))
-# stopifnot(nrow(eng_nt) == nrow(engMed_nt))
-# stopifnot(nrow(java_nt) == nrow(javaMed_nt))
-# 
-# write("<NonTerminalTable>",file=effect_size_file, append=TRUE)
-# printWilcox(eng_s_nt$lstm_entropy, eng_nt$lstm_entropy, "Eng Simplified Nonterminals (LSTM Small)", "Eng Full Nonterminals (LSTM Small)", FALSE)
-# printWilcox(engMed_s_nt$lstm_entropy, engMed_nt$lstm_entropy, "Eng Simplified Nonterminals (LSTM Med)", "Eng Full Nonterminals (LSTM Med)", FALSE)
-# 
-# printWilcox(eng_s_nt$lstm_entropy, java_nt$lstm_entropy, "Eng Simplified Nonterminals (LSTM Small)", "Java Nonterminals (LSTM Small)", FALSE)
-# printWilcox(eng_nt$lstm_entropy, java_nt$lstm_entropy, "Eng Full Nonterminals (LSTM Small)", "Java Nonterminals (LSTM Small)", FALSE)
-# 
-# printWilcox(engMed_s_nt$lstm_entropy, javaMed_nt$lstm_entropy, "Eng Simplified Nonterminals (LSTM Med)", "Java Nonterminals (LSTM Med)", FALSE)
-# printWilcox(engMed_nt$lstm_entropy, javaMed_nt$lstm_entropy, "Eng Full Nonterminals (LSTM Med)", "Java Nonterminals (LSTM Med)", FALSE)
-# write("<\\NonTerminalTable>",file=effect_size_file, append=TRUE)
-# 
-# s_nt <- rbind(eng_nt, eng_s_nt, java_nt)
-# drawLSTMBoxplot(s_nt, "English and Java Non Terminals (LSTM Small)", "LSTM entropy", "./Plots/JavaEngTreeNonTermBoxplot(LSTM_Small).eps")
-# drawLSTMBoxplotCapped(s_nt, "English and Java Non Terminals (LSTM Small)", "LSTM entropy", "./Plots/JavaEngTreeNonTermBoxplotCap(LSTM_Small).eps")
-# 
-# 
-# m_nt <- rbind(engMed_nt, engMed_s_nt, javaMed_nt)
-# drawLSTMBoxplot(m_nt, "English and Java Non Terminals (LSTM Medium)", "LSTM entropy", "./Plots/JavaEngTreeNonTermBoxplot(LSTM_Med).eps")
-# drawLSTMBoxplotCapped(m_nt, "English and Java Non Terminals (LSTM Medium)", "LSTM entropy", "./Plots/JavaEngTreeNonTermBoxplotCap(LSTM_Med).eps")

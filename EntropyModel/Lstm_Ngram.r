@@ -20,22 +20,6 @@ close(stats_out)
 source(file="./EntropyModel/LSTMHelperFunctions.r")
 
 
-
-#Small full
-#These corpora get a special names b/c we need to use in later in the domain specific comparisons
-# list[n_b, c_b, l_b, ent_plot1] <- createEntropyPlots("brown_full", "Brown Lstm vs 3 gram entropy density", "Brown Lstm vs 3 gram entropy boxplot", "Brown")
-# list[n_j, c_j, l_j, ent_plot2] <- createEntropyPlots("djava_no_collapse_small","Java Lstm vs 3 gram entropy density" ,"Java Name Lstm vs 3 gram entropy boxplot","DJavaSmall")
-# #list[n_j, c_j, l_j, ent_plot2] <- createEntropyPlots("djava_small","Java Lstm vs 3 gram entropy density" ,"Java Name Lstm vs 3 gram entropy boxplot","DJavaSmall")
-# 
-# createLSTMCompare(l_b, l_j, n_b, c_j, "Brown", "Java", "Comparison of lstm entropy of Brown and Java Small","Comparison of lstm entropy of Brown and Java Small", "BrownJavaSmall")
-# t = sapply(ent_plot1$variable, function(x) {return(gsub("^.*?_","_",x))})
-# View(t)
-
-#Small names
-# list[n1, c1, l1, ent_plot] <- createEntropyPlots("brown_names", "Brown Name Lstm vs 3 gram entropy density", "Brown Name Lstm vs 3 gram entropy boxplot", "BrownName")
-# list[n2, c2, l2, ent_plot]<- createEntropyPlots("djava_names_small","Java Lstm vs 3 gram entropy density" ,"Java Name Lstm vs 3 gram entropy boxplot","DJavaSmallName")
-# createLSTMCompare(l1, l2, n1, c2, "Brown Name", "Java Name", "Comparison of lstm entropy of Brown and Java Small Names","Comparison of lstm entropy of Brown and Java Small Names", "BrownJavaSmallName")
-
 #Full
 list[n1, c1, l1, ent_plot1] <- createEntropyPlots("eng_full", "Eng Lstm vs 3 gram entropy density", "Eng Lstm vs 3 gram entropy boxplot", "Eng")
 list[n2, c2, l2, ent_plot2] <- createEntropyPlots("djava_no_collapse","Java Lstm vs 3 gram entropy density" ,"Java Lstm vs 3 gram entropy boxplot","DJava")
@@ -95,56 +79,17 @@ c6$language = "Haskell"
 l6$language = "Haskell"
 
 combined <- rbind(n1, n2, n3 ,n4, n5, n6)
-drawNgramBoxplot(combined, "", YLabelNgram,"./Plots/PLVsEnglishName3gramBoxplot.eps")
-# p1 <- ggplot(combined, aes(factor(language), ngram_entropy)) +
-#     geom_boxplot(aes(fill=language)) +
-#     scale_fill_manual(values=cbbPalette) + 
-#     theme(axis.text.x = element_text(size=14, face = "bold"), 
-#         axis.title.x = element_blank(),
-#         axis.text.y = element_text(size=12),
-#         axis.title.y = element_text(size=14),
-#         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
-#         panel.background = element_rect(fill = "white"),
-#         legend.position="none") +
-#     ylab("3 gram entropy") + 
-#     ggtitle("Open Category (Identifiers) 3 gram")
-# ggsave(p1, file= "./Plots/PLVsEnglishName3gramBoxplot.eps", width = 19.05, height = 13.2, dpi = 300, units = "cm")
-# ggsave(p1, file= "./Plots/PLVsEnglishName3gramBoxplot.tiff", width = 19.05, height = 13.2, dpi = 300, units = "cm")
+drawNgramBoxplot(combined, "", YLabelNgram,"./Plots/PLVsEnglishName3gramBoxplot.tiff")
+drawNgramBoxplot(combined, "", YLabelNgram,"./Plots/PLVsEnglishName3gramBoxplot.png")
 
 combined  <- rbind(c1, c2, c3, c4, c5, c6)
-drawCacheBoxplot(combined, "", YLabelCache,"./Plots/PLVsEnglishName3gramCacheBoxplot.eps")
-# p2 <- ggplot(combined, aes(factor(language), cache_entropy)) + 
-#   geom_boxplot(aes(fill=language)) +  
-#   scale_fill_manual(values=cbbPalette) +
-#   theme(axis.text.x = element_text(size=14, face = "bold"), 
-#         axis.title.x = element_blank(),
-#         axis.text.y = element_text(size=12),
-#         axis.title.y = element_text(size=14),
-#         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
-#         panel.background = element_rect(fill = "white"),
-#         legend.position="none") +
-#   ylab("3 gram with 10 cache entropy") + 
-#   ggtitle("Open Category (Identifiers) 3 gram Cache")
-# ggsave(p2, file= "./Plots/PLVsEnglishName3gramCacheBoxplot.eps", width = 19.05, height = 13.2, dpi = 300, units = "cm")
-# ggsave(p2, file= "./Plots/PLVsEnglishName3gramCacheBoxplot.tiff", width = 19.05, height = 13.2, dpi = 300, units = "cm")
+drawCacheBoxplot(combined, "", YLabelCache,"./Plots/PLVsEnglishName3gramCacheBoxplot.tiff")
+drawCacheBoxplot(combined, "", YLabelCache,"./Plots/PLVsEnglishName3gramCacheBoxplot.png")
 
 combined  <- rbind(l1,l2,l3,l4,l5,l6)
-drawLSTMBoxplot(combined, "", YLabelLSTM,"./Plots/PLVsEnglishNameLSTMBoxplot.eps")
+drawLSTMBoxplot(combined, "", YLabelLSTM,"./Plots/PLVsEnglishNameLSTMBoxplot.tiff")
+drawLSTMBoxplot(combined, "", YLabelLSTM,"./Plots/PLVsEnglishNameLSTMBoxplot.png")
 
-# p3 <- ggplot(combined, aes(factor(language), lstm_entropy)) + 
-#   geom_boxplot(aes(fill=language)) +  
-#   scale_fill_manual(values=cbbPalette) + 
-#   theme(axis.text.x = element_text(size=14, face = "bold"), 
-#         axis.title.x = element_blank(),
-#         axis.text.y = element_text(size=12),
-#         axis.title.y = element_text(size=14),
-#         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
-#         panel.background = element_rect(fill = "white"),
-#         legend.position="none") +
-#   ylab("Lstm entropy") + 
-#   ggtitle("Open Category (Identifiers) LSTM")
-# ggsave(p3, file= "./Plots/PLVsEnglishNameLSTMBoxplot.eps", width = 19.05, height = 13.2, dpi = 300, units = "cm")
-# ggsave(p3, file= "./Plots/PLVsEnglishNameLSTMBoxplot.tiff", width = 19.05, height = 13.2, dpi = 300, units = "cm")
 
 write("<NameTable>",file=effect_size_file, append=TRUE)
 #Name effect sizes.
@@ -180,24 +125,6 @@ list[n3, c3, l3, ent_plot] <- createEntropyPlots("c_no_collapse", "C Lstm vs 3 g
 list[n4, c4, l4, ent_plot] <- createEntropyPlots("clojure_no_collapse","Clojure Lstm vs 3 gram entropy density" ,"Clojure Lstm vs 3 gram entropy boxplot","Clojure")
 list[n5, c5, l5, ent_plot] <- createEntropyPlots("ruby_no_collapse","Ruby Lstm vs 3 gram entropy density" ,"Ruby Lstm vs 3 gram entropy boxplot","Ruby")
 list[n6, c6, l6, ent_plot] <- createEntropyPlots("haskell_no_collapse","Haskell Lstm vs 3 gram entropy density" ,"Haskell Lstm vs 3 gram entropy boxplot","Haskell")
-
-
-#list[n2, c2, l2, ent_plot] <- createEntropyPlots("djava_full","Java Lstm vs 3 gram entropy density" ,"Java Lstm vs 3 gram entropy boxplot","DJava")
-#list[n3, c3, l3, ent_plot] <- createEntropyPlots("c_full", "C Lstm vs 3 gram entropy density", "C Lstm vs 3 gram entropy boxplot", "C")
-#list[n4, c4, l4, ent_plot] <- createEntropyPlots("clojure_full","Clojure Lstm vs 3 gram entropy density" ,"Clojure Lstm vs 3 gram entropy boxplot","Clojure")
-#list[n5, c5, l5, ent_plot] <- createEntropyPlots("ruby_full","Ruby Lstm vs 3 gram entropy density" ,"Ruby Lstm vs 3 gram entropy boxplot","Ruby")
-#list[n6, c6, l6, ent_plot] <- createEntropyPlots("haskell_full","Haskell Lstm vs 3 gram entropy density" ,"Haskell Lstm vs 3 gram entropy boxplot","Haskell")
-
-#Just measure the effect of the cache (This actually tells us something about the locality, where as the LSTM isn't really as interpretable)
-
-
-#list[n1, c1, ent_plot] <- createEntropyPlotsNoLSTM("eng_full", "Eng Lstm vs 3 gram entropy density", "Eng Lstm vs 3 gram entropy boxplot", "Eng")
-#list[n2, c2, ent_plot] <- createEntropyPlotsNoLSTM("djava_full","Java Lstm vs 3 gram entropy density" ,"Java Lstm vs 3 gram entropy boxplot","DJava")
-#list[n3, c3, ent_plot] <- createEntropyPlotsNoLSTM("c_full", "C Lstm vs 3 gram entropy density", "C Lstm vs 3 gram entropy boxplot", "C")
-#list[n4, c4, ent_plot] <- createEntropyPlotsNoLSTM("clojure_full","Clojure Lstm vs 3 gram entropy density" ,"Clojure Lstm vs 3 gram entropy boxplot","Clojure")
-#list[n5, c5, ent_plot] <- createEntropyPlotsNoLSTM("ruby_full","Ruby Lstm vs 3 gram entropy density" ,"Ruby Lstm vs 3 gram entropy boxplot","Ruby")
-#list[n6, c6, ent_plot] <- createEntropyPlotsNoLSTM("haskell_full","Haskell Lstm vs 3 gram entropy density" ,"Haskell Lstm vs 3 gram entropy boxplot","Haskell")
-
 
 
 n1$language = "English"
@@ -285,58 +212,16 @@ write("<\\CodeVsEngTable>",file=effect_size_file, append=TRUE)
 
 
 combined <- rbind(n1, ng, ns, n2, n3 ,n4, n5, n6)
-drawNgramBoxplot(combined, "", YLabelNgram,"./Plots/PLVsNL3gramBoxplot.eps")
-
-# p1 <- ggplot(combined, aes(factor(language), ngram_entropy)) + 
-#   geom_boxplot(aes(fill=language)) +  
-#   scale_fill_manual(values=cbbPalette) + 
-#   theme(axis.text.x = element_text(size=14, face = "bold"), 
-#         axis.title.x = element_blank(),
-#         axis.text.y = element_text(size=12),
-#         axis.title.y = element_text(size=14),
-#         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
-#         panel.background = element_rect(fill = "white"),
-#         legend.position="none") +
-#   ggtitle("Entropy Boxplot for 3 gram Models")
-# ggsave(p1, file= "./Plots/PLVsNL3gramBoxplot.eps", width = 19.05, height = 13.2, dpi = 300, units = "cm")
-# ggsave(p1, file= "./Plots/PLVsNL3gramBoxplot.tiff", width = 19.05, height = 13.2, dpi = 300, units = "cm")
-
+drawNgramBoxplot(combined, "", YLabelNgram,"./Plots/PLVsNL3gramBoxplot.tiff")
+drawNgramBoxplot(combined, "", YLabelNgram,"./Plots/PLVsNL3gramBoxplot.png")
 
 combined  <- rbind(c1, cg, cs, c2, c3, c4, c5, c6)
-drawCacheBoxplot(combined, "", YLabelCache,"./Plots/PLVsNL3gramCacheBoxplot.eps")
-# p2 <- ggplot(combined, aes(factor(language), cache_entropy)) + 
-#   geom_boxplot(aes(fill=language)) +  
-#   scale_fill_manual(values=cbbPalette) + 
-#   theme(axis.text.x = element_text(size=14, face = "bold"), 
-#         axis.title.x = element_blank(),
-#         axis.text.y = element_text(size=12),
-#         axis.title.y = element_text(size=14),
-#         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
-#         panel.background = element_rect(fill = "white"),
-#         legend.position="none") +
-#   ggtitle("Entropy Boxplot for 3 gram Cache Models")
-# ggsave(p2, file= "./Plots/PLVsNL3gramCacheBoxplot.eps", width = 19.05, height = 13.2, dpi = 300, units = "cm")
-# ggsave(p2, file= "./Plots/PLVsNL3gramCacheBoxplot.tiff", width = 19.05, height = 13.2, dpi = 300, units = "cm")
+drawCacheBoxplot(combined, "", YLabelCache,"./Plots/PLVsNL3gramCacheBoxplot.tiff")
+drawCacheBoxplot(combined, "", YLabelCache,"./Plots/PLVsNL3gramCacheBoxplot.png")
 
 combined  <- rbind(l1,lg,ls,l2,l3,l4,l5,l6)
-drawLSTMBoxplot(combined, "", YLabelLSTM,"./Plots/PLVsNLLSTMBoxplot.eps")
-
-# p3 <- ggplot(combined, aes(factor(language), lstm_entropy)) + 
-#   geom_boxplot(aes(fill=language)) +  
-#   scale_fill_manual(values=cbbPalette) + 
-#   theme(axis.text.x = element_text(size=14, face = "bold"), 
-#         axis.title.x = element_blank(),
-#         axis.text.y = element_text(size=12),
-#         axis.title.y = element_text(size=14),
-#         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
-#         panel.background = element_rect(fill = "white"),
-#         legend.position="none") +
-#   ggtitle("Entropy Boxplot for LSTM Models")
-# ggsave(p3, file= "./Plots/PLVsNLLSTMBoxplot.eps", width = 19.05, height = 13.2, dpi = 300, units = "cm")
-# ggsave(p3, file= "./Plots/PLVsNLLSTMBoxplot.tiff", width = 19.05, height = 13.2, dpi = 300, units = "cm")
-
-
-
+drawLSTMBoxplot(combined, "", YLabelLSTM,"./Plots/PLVsNLLSTMBoxplot.tiff")
+drawLSTMBoxplot(combined, "", YLabelLSTM,"./Plots/PLVsNLLSTMBoxplot.png")
 
 #Domain 
 #(Revise to make sure we use the small corpora)
@@ -350,6 +235,7 @@ list[n2, c2, l2, ent_plot] <- createEntropyPlots("scifi_full", "Scifi Lstm vs 3 
 list[n3, c3, l3, ent_plot] <- createEntropyPlots("law_full", "Law Lstm vs 3 gram entropy density", "Law Lstm vs 3 gram entropy boxplot", "Law")
 list[n4, c4, l4, ent_plot] <- createEntropyPlots("shakespeare_full", "Shakespeare Lstm vs 3 gram entropy density", "Shakespeare Lstm vs 3 gram entropy boxplot", "Shakespeare")
 list[n5, c5, l5, ent_plot] <- createEntropyPlots("recipes_full", "Recipe Lstm vs 3 gram entropy density", "Recipe Lstm vs 3 gram entropy boxplot", "Recipe")
+list[n6, c6, l6, ent_plot] <- createEntropyPlots("commits_full", "Commit Lstm vs 3 gram entropy density", "Commit Lstm vs 3 gram entropy boxplot", "Commit")
 
 
 printWilcox(n1$ngram_entropy, c1$cache_entropy, "NASA Ngram", "NASA Cache", TRUE) # Cache worse, but neglible
@@ -359,6 +245,7 @@ printWilcox(n2$ngram_entropy, c2$cache_entropy, "Scifi Ngram", "Scifi Cache", TR
 printWilcox(n4$ngram_entropy, c4$cache_entropy, "Shakespeare Ngram", "Shakespeare Cache", TRUE) 
 
 printWilcox(n5$ngram_entropy, c5$cache_entropy, "Recipes Ngram", "Recipe Cache", TRUE)
+printWilcox(n5$ngram_entropy, c5$cache_entropy, "Commits Ngram", "Commits Cache", TRUE)
 
 printWilcox(n_b$ngram_entropy, c_b$cache_entropy, "Brown Ngram", "Brown Cache", TRUE) 
 printWilcox(n_j$ngram_entropy, c_j$cache_entropy, "Java Ngram", "Java Cache", TRUE) 
@@ -393,6 +280,10 @@ n5$language = "Recipes"
 c5$language = "Recipes"
 l5$language = "Recipes"
 
+n6$language = "Commits"
+c6$language = "Commits"
+l6$language = "Commits"
+
 write("<TechTable>",file=effect_size_file, append=TRUE)
 #Do wilcox comparisons for all the domain specific langauges.
 printWilcox(n_j$ngram_entropy, n_b$ngram_entropy, n_j$language[[1]], n_b$language[[1]], FALSE)
@@ -401,6 +292,7 @@ printWilcox(n2$ngram_entropy, n_b$ngram_entropy, n2$language[[1]], n_b$language[
 printWilcox(n3$ngram_entropy, n_b$ngram_entropy, n3$language[[1]], n_b$language[[1]], FALSE)
 printWilcox(n4$ngram_entropy, n_b$ngram_entropy, n4$language[[1]], n_b$language[[1]], FALSE)
 printWilcox(n5$ngram_entropy, n_b$ngram_entropy, n5$language[[1]], n_b$language[[1]], FALSE)
+printWilcox(n6$ngram_entropy, n_b$ngram_entropy, n6$language[[1]], n_b$language[[1]], FALSE)
 
 printWilcox(c_j$cache_entropy, c_b$cache_entropy, c_j$language[[1]], c_b$language[[1]], FALSE)
 printWilcox(c1$cache_entropy, c_b$cache_entropy, c1$language[[1]], c_b$language[[1]], FALSE)
@@ -408,6 +300,7 @@ printWilcox(c2$cache_entropy, c_b$cache_entropy, c2$language[[1]], c_b$language[
 printWilcox(c3$cache_entropy, c_b$cache_entropy, c3$language[[1]], c_b$language[[1]], FALSE)
 printWilcox(c4$cache_entropy, c_b$cache_entropy, c4$language[[1]], c_b$language[[1]], FALSE)
 printWilcox(c5$cache_entropy, c_b$cache_entropy, c5$language[[1]], c_b$language[[1]], FALSE)
+printWilcox(c6$cache_entropy, c_b$cache_entropy, c6$language[[1]], c_b$language[[1]], FALSE)
 
 printWilcox(l_j$lstm_entropy, l_b$lstm_entropy, l_j$language[[1]], l_b$language[[1]], FALSE)
 printWilcox(l1$lstm_entropy, l_b$lstm_entropy, l1$language[[1]], l_b$language[[1]], FALSE)
@@ -415,6 +308,7 @@ printWilcox(l2$lstm_entropy, l_b$lstm_entropy, l2$language[[1]], l_b$language[[1
 printWilcox(l3$lstm_entropy, l_b$lstm_entropy, l3$language[[1]], l_b$language[[1]], FALSE)
 printWilcox(l4$lstm_entropy, l_b$lstm_entropy, l4$language[[1]], l_b$language[[1]], FALSE)
 printWilcox(l5$lstm_entropy, l_b$lstm_entropy, l5$language[[1]], l_b$language[[1]], FALSE)
+printWilcox(l6$lstm_entropy, l_b$lstm_entropy, l6$language[[1]], l_b$language[[1]], FALSE)
 
 #And vs Java
 printWilcox(n_b$ngram_entropy, n_j$ngram_entropy, n_b$language[[1]], n_j$language[[1]], FALSE)
@@ -423,6 +317,7 @@ printWilcox(n2$ngram_entropy, n_j$ngram_entropy, n2$language[[1]], n_j$language[
 printWilcox(n3$ngram_entropy, n_j$ngram_entropy, n3$language[[1]], n_j$language[[1]], FALSE)
 printWilcox(n4$ngram_entropy, n_j$ngram_entropy, n4$language[[1]], n_j$language[[1]], FALSE)
 printWilcox(n5$ngram_entropy, n_j$ngram_entropy, n5$language[[1]], n_j$language[[1]], FALSE)
+printWilcox(n6$ngram_entropy, n_j$ngram_entropy, n6$language[[1]], n_j$language[[1]], FALSE)
 
 printWilcox(c_b$cache_entropy, c_j$cache_entropy, c_b$language[[1]], c_j$language[[1]], FALSE)
 printWilcox(c1$cache_entropy, c_j$cache_entropy, c1$language[[1]], c_j$language[[1]], FALSE)
@@ -430,6 +325,7 @@ printWilcox(c2$cache_entropy, c_j$cache_entropy, c2$language[[1]], c_j$language[
 printWilcox(c3$cache_entropy, c_j$cache_entropy, c3$language[[1]], c_j$language[[1]], FALSE)
 printWilcox(c4$cache_entropy, c_j$cache_entropy, c4$language[[1]], c_j$language[[1]], FALSE)
 printWilcox(c5$cache_entropy, c_j$cache_entropy, c5$language[[1]], c_j$language[[1]], FALSE)
+printWilcox(c6$cache_entropy, c_j$cache_entropy, c6$language[[1]], c_j$language[[1]], FALSE)
 
 printWilcox(l_b$lstm_entropy, l_j$lstm_entropy, l_b$language[[1]], l_j$language[[1]], FALSE)
 printWilcox(l1$lstm_entropy, l_j$lstm_entropy, l1$language[[1]], l_j$language[[1]], FALSE)
@@ -437,52 +333,21 @@ printWilcox(l2$lstm_entropy, l_j$lstm_entropy, l2$language[[1]], l_j$language[[1
 printWilcox(l3$lstm_entropy, l_j$lstm_entropy, l3$language[[1]], l_j$language[[1]], FALSE)
 printWilcox(l4$lstm_entropy, l_j$lstm_entropy, l4$language[[1]], l_j$language[[1]], FALSE)
 printWilcox(l5$lstm_entropy, l_j$lstm_entropy, l5$language[[1]], l_j$language[[1]], FALSE)
+printWilcox(l6$lstm_entropy, l_j$lstm_entropy, l6$language[[1]], l_j$language[[1]], FALSE)
 write("<\\TechTable>",file=effect_size_file, append=TRUE)
 
-n <- rbind(n_j, n_b, n1, n2, n3 ,n4, n5)
-drawNgramBoxplot(n, "", YLabelNgram,"./Plots/DomainSpecfic3gramBoxplot.eps")
-# p1 <- ggplot(n, aes(factor(language), ngram_entropy)) + 
-#   geom_boxplot(aes(fill=language)) +  
-#   scale_fill_manual(values=cbbPalette) + 
-#   theme(axis.text.x = element_text(size=14, face = "bold"), 
-#         axis.title.x = element_blank(),
-#         axis.text.y = element_text(size=12),
-#         axis.title.y = element_text(size=14),
-#         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
-#         panel.background = element_rect(fill = "white"),
-#         legend.position="none") +
-#   ggtitle("Entropy Boxplot for 3 gram Models of Domain Specific English")
-# ggsave(p1, file= "./Plots/DomainSpecfic3gramBoxplot.eps")
+n <- rbind(n_j, n_b, n1, n2, n3 ,n4, n5,n6)
+drawNgramBoxplot(n, "", YLabelNgram,"./Plots/DomainSpecific3gramBoxplot.tiff")
+drawNgramBoxplot(n, "", YLabelNgram,"./Plots/DomainSpecific3gramBoxplot.png")
 
-cache <- rbind(c_j, c_b, c1, c2, c3, c4,c5)
-drawCacheBoxplot(cache, "", YLabelCache,"./Plots/DomainSpecfic3gramCacheBoxplot.eps")
-# p2 <- ggplot(cache, aes(factor(language), cache_entropy)) + 
-#   geom_boxplot(aes(fill=language)) +  
-#   scale_fill_manual(values=cbbPalette) + 
-#   theme(axis.text.x = element_text(size=14, face = "bold"), 
-#         axis.title.x = element_blank(),
-#         axis.text.y = element_text(size=12),
-#         axis.title.y = element_text(size=14),
-#         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
-#         panel.background = element_rect(fill = "white"),
-#         legend.position="none") +
-#   ggtitle("Entropy Boxplot for 3 gram Cache Models of Domain Specific English")
-# ggsave(p2, file= "./Plots/DomainSpecfic3gramCacheBoxplot.eps")
+cache <- rbind(c_j, c_b, c1, c2, c3, c4,c5,c6)
+drawCacheBoxplot(cache, "", YLabelCache,"./Plots/DomainSpecific3gramCacheBoxplot.tiff")
+drawCacheBoxplot(cache, "", YLabelCache,"./Plots/DomainSpecific3gramCacheBoxplot.png")
 
-l <- rbind(l_j, l_b, l1,l2,l3,l4,l5)
-drawLSTMBoxplot(l, "", YLabelLSTM,"./Plots/DomainSpecficLSTMBoxplot.eps")
-# p3 <- ggplot(l, aes(factor(language), lstm_entropy)) + 
-#   geom_boxplot(aes(fill=language)) +  
-#   scale_fill_manual(values=cbbPalette) +
-#   theme(axis.text.x = element_text(size=14, face = "bold"), 
-#         axis.title.x = element_blank(),
-#         axis.text.y = element_text(size=12),
-#         axis.title.y = element_text(size=14),
-#         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
-#         panel.background = element_rect(fill = "white"),
-#         legend.position="none") +
-#   ggtitle("Entropy Boxplot for LSTM Models of Domain Specific English")
-# ggsave(p3, file= "./Plots/DomainSpecficLSTMBoxplot.eps")
+l <- rbind(l_j, l_b, l1,l2,l3,l4,l5,l6)
+drawLSTMBoxplot(l, "", YLabelLSTM,"./Plots/DomainSpecificLSTMBoxplot.tiff")
+drawLSTMBoxplot(l, "", YLabelLSTM,"./Plots/DomainSpecificLSTMBoxplot.png")
+
 
 
 #EFL
@@ -541,142 +406,14 @@ close(stats_out)
 
 
 n <- rbind(n_j, n_b, n1, n2)
-drawNgramBoxplot(n, "", YLabelNgram,"./Plots/EFL3gramBoxplot.eps")
-# p1 <- ggplot(n, aes(factor(language), ngram_entropy)) + 
-#   geom_boxplot(aes(fill=language)) +  
-#   scale_fill_manual(values=cbbPalette) + 
-#   theme(axis.text.x = element_text(size=14, face = "bold"), 
-#         axis.title.x = element_blank(),
-#         axis.text.y = element_text(size=12),
-#         axis.title.y = element_text(size=14),
-#         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
-#         panel.background = element_rect(fill = "white"),
-#         legend.position="none") +
-#   ggtitle("Entropy Boxplot for 3 gram Models of English Language Learners")
-# ggsave(p1, file= "./Plots/EFL3gramBoxplot.eps")
+drawNgramBoxplot(n, "", YLabelNgram,"./Plots/EFL3gramBoxplot.tiff")
+drawNgramBoxplot(n, "", YLabelNgram,"./Plots/EFL3gramBoxplot.png")
 
 colnames(c_j) <- c("file","id","token","cache_entropy","language")
 cache <- rbind(c_j, c_b, c1, c2)
-drawCacheBoxplot(cache, "", YLabelCache,"./Plots/EFL3gramCacheBoxplot.eps")
-# p2 <- ggplot(cache, aes(factor(language), cache_entropy)) + 
-#   geom_boxplot(aes(fill=language)) +  
-#   scale_fill_manual(values=cbbPalette) + 
-#   theme(axis.text.x = element_text(size=14, face = "bold"), 
-#         axis.title.x = element_blank(),
-#         axis.text.y = element_text(size=12),
-#         axis.title.y = element_text(size=14),
-#         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
-#         panel.background = element_rect(fill = "white"),
-#         legend.position="none") +
-#   ggtitle("Entropy Boxplot for 3 gram Cache Models of English Language Learners")
-# ggsave(p2, file= "./Plots/EFL3gramCacheBoxplot.eps")
-
-#Best Ngram models. (Cache for code, normal ngram for English corpora)
-# colnames(c_j) <- c("file","id","token","ngram_entropy","language")
-# bestngram <- rbind(c_j, n_b, n1, n2)
-# pnBest <- ggplot(bestngram, aes(factor(language), ngram_entropy)) + 
-#   geom_boxplot(aes(fill=language)) + 
-#   scale_fill_manual(values=cbbPalette) + 
-#   theme(axis.text.x = element_text(size=14, face = "bold"), 
-#         axis.title.x = element_blank(),
-#         axis.text.y = element_text(size=12),
-#         axis.title.y = element_text(size=14),
-#         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
-#         panel.background = element_rect(fill = "white"),
-#         legend.position="none") +
-#   ggtitle("English Language Learners Best Ngram")
-# ggsave(pnBest, file= "./Plots/EFL3gramBestBoxplot.eps")#, height = 7, width = 9, units = 'cm', dpi = 300)
-# ggsave(pnBest, file= "./Plots/EFL3gramBestBoxplot.tiff")#, height = 7, width = 9, units = 'cm', dpi = 300)
+drawCacheBoxplot(cache, "", YLabelCache,"./Plots/EFL3gramCacheBoxplot.tiff")
+drawCacheBoxplot(cache, "", YLabelCache,"./Plots/EFL3gramCacheBoxplot.png")
 
 l <- rbind(l_j, l_b, l1,l2)
-drawLSTMBoxplot(l, "", YLabelLSTM,"./Plots/EFLLSTMBoxplot.eps")
-# p3 <- ggplot(l, aes(factor(language), lstm_entropy)) + geom_boxplot(aes(fill=language)) +  
-#   scale_fill_manual(values=cbbPalette) +
-#   theme(axis.text.x = element_text(size=14, face = "bold"), 
-#         axis.title.x = element_blank(),
-#         axis.text.y = element_text(size=12),
-#         axis.title.y = element_text(size=14),
-#         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
-#         panel.background = element_rect(fill = "white"),
-#         legend.position="none") +
-#   ggtitle("English Language Learners LSTM")
-# ggsave(p3, file= "./Plots/EFLLSTMBoxplot.eps")#, height = 7, width = 9, units = 'cm', dpi = 300)
-# ggsave(p3, file= "./Plots/EFLLSTMBoxplot.tiff")#, height = 7, width = 9, units = 'cm', dpi = 300)
-
-
-#-------------------------------------- Additional (Not included in paper) Experiments -------------------------------------
-# 
-# 
-# #Name Literals (LSTM only)
-# l1 <- loadLSTM("eng_names", "English")
-# l2 <- loadLSTM("djava_no_collapse_names", "Java")
-# l3 <- loadLSTM("ruby_no_collapse_names", "Ruby")
-# l4 <- loadLSTM("clojure_no_collapse_names", "Clojure")
-# l5 <- loadLSTM("haskell_no_collapse_names", "haskell")
-# l6 <- loadLSTM("c_no_collapse_names", "C")
-# 
-# l <- rbind(l1, l2, l3, l4, l5, l6)
-# p4 <- ggplot(l, aes(factor(language), lstm_entropy)) + geom_boxplot(aes(fill=language)) +
-#   scale_fill_manual(values=cbbPalette) +
-#   theme(axis.text.x = element_text(size=14, face = "bold"),
-#         axis.title.x = element_blank(),
-#         axis.text.y = element_text(size=12),
-#         axis.title.y = element_text(size=14),
-#         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
-#         panel.background = element_rect(fill = "white"),
-#         legend.position="none") +
-#   ylab("Lstm entropy") +
-#   ggtitle("Open Category (Identifiers and Literals) LSTM")
-# ggsave(p4, file= "./Plots/PLVsEnglishNameLSTMBoxplot.eps")#, height = 7, width = 9, units = 'cm', dpi = 300)
-# ggsave(p4, file= "./Plots/PLVsEnglishNameLSTMBoxplot.tiff")#, height = 7, width = 9, units = 'cm', dpi = 300)
-# 
-# write("<NameTable>",file=effect_size_file, append=TRUE)
-# printWilcox(l2$lstm_entropy, l1$lstm_entropy, l2$language[[1]], l1$language[[1]], FALSE)
-# printWilcox(l3$lstm_entropy, l1$lstm_entropy, l3$language[[1]], l1$language[[1]], FALSE)
-# printWilcox(l4$lstm_entropy, l1$lstm_entropy, l4$language[[1]], l1$language[[1]], FALSE)
-# printWilcox(l5$lstm_entropy, l1$lstm_entropy, l5$language[[1]], l1$language[[1]], FALSE)
-# printWilcox(l6$lstm_entropy, l1$lstm_entropy, l6$language[[1]], l1$language[[1]], FALSE)
-# write("<\\NameTable>",file=effect_size_file, append=TRUE)
-# 
-# #LSTM effect of Scalling (Compare Java Small + Large with Recipe Small + Large)
-# list[n_j, c_j, l_j, ent_plot] <- createEntropyPlots("djava_no_collapse_small","Java Lstm vs 3 gram entropy density" ,"Java Name Lstm vs 3 gram entropy boxplot","JavaSmall")
-# list[n_j2, c_j2, l_j2, ent_plot2] <- createEntropyPlots("djava_no_collapse","Java Lstm vs 3 gram entropy density" ,"Java Name Lstm vs 3 gram entropy boxplot","Java")
-# 
-# list[n_r, c_r, l_r, ent_plot3] <- createEntropyPlots("recipes_full", "Recipe Lstm vs 3 gram entropy density", "Recipe Lstm vs 3 gram entropy boxplot", "RecipeSmall")
-# l_r2 <- read.csv("./EntropyModel/data/tmp/lstm_compare/lstm/recipes_big_full_entropy.csv")
-# colnames(l_r2) <- c("token", "lstm_entropy")
-# 
-# 
-# n_j$language = "Java Small"
-# c_j$language = "Java Small"
-# l_j$language = "Java Small"
-# 
-# n_j2$language = "Java"
-# c_j2$language = "Java"
-# l_j2$language = "Java"
-# 
-# n_r$language = "Recipes Small"
-# c_r$language = "Recipes Small"
-# l_r$language = "Recipes Small"
-# 
-# l_r2$language = "Recipes"
-# 
-# printWilcox(l_j$lstm_entropy, l_r$lstm_entropy, l_j$language[[1]], l_r$language[[1]], FALSE)
-# printWilcox(l_j2$lstm_entropy, l_r2$lstm_entropy, l_j2$language[[1]], l_r2$language[[1]], FALSE)
-# 
-# printWilcox(l_j$lstm_entropy, l_j2$lstm_entropy, l_j$language[[1]], l_j2$language[[1]], FALSE)
-# printWilcox(l_r$lstm_entropy, l_r2$lstm_entropy, l_r$language[[1]], l_r2$language[[1]], FALSE)
-# 
-# l <- rbind(l_j, l_j2, l_r, l_r2)
-# pScale <- ggplot(l, aes(factor(language), lstm_entropy)) + geom_boxplot(aes(fill=language)) +  
-#   scale_fill_manual(values=cbbPalette) +
-#   theme(axis.text.x = element_text(size=14, face = "bold"), 
-#         axis.title.x = element_blank(),
-#         axis.text.y = element_text(size=12),
-#         axis.title.y = element_text(size=14),
-#         panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
-#         panel.background = element_rect(fill = "white"),
-#         legend.position="none") +
-#   ylab("Lstm entropy") + 
-#   ggtitle("Java and Recipe Scale LSTM")
-# ggsave(pScale, file= "./Plots/JavaRecipeScaleLSTMBoxplot.eps")#, height = 7, width = 9, units = 'cm', dpi = 300)
+drawLSTMBoxplot(l, "", YLabelLSTM,"./Plots/EFLLSTMBoxplot.tiff")
+drawLSTMBoxplot(l, "", YLabelLSTM,"./Plots/EFLLSTMBoxplot.png")

@@ -75,9 +75,9 @@ createEntropyPlotsNoLSTM <- function(data_string, densityTitle, boxplotTitle, sa
     geom_boxplot() + 
     scale_fill_manual(values=cbbPalette)  + 
     theme(axis.text.x = element_text(size=12), 
-          axis.title = element_text(size=14),
+          axis.title.x = element_text(size=14),
           axis.text.y = element_text(size=12),
-          axis.title = element_text(size=14),
+          axis.title.y = element_text(size=14),
           panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
           panel.background = element_rect(fill = "white"),
           legend.position="none") + 
@@ -85,12 +85,13 @@ createEntropyPlotsNoLSTM <- function(data_string, densityTitle, boxplotTitle, sa
     ylab("Entropy") +
     ggtitle(boxplotTitle)
   
-  ent2 = ggplot(ent_plot, aes(x=value, group = variable, fill = variable)) + geom_density(alpha = .5) + xlab("entropy") + scale_fill_manual(values=cbbPalette) + ggtitle(densityTitle)
-  print(ent1)
-  print(ent2)
+  #ent2 = ggplot(ent_plot, aes(x=value, group = variable, fill = variable)) + geom_density(alpha = .5) + xlab("entropy") + scale_fill_manual(values=cbbPalette) + ggtitle(densityTitle)
+  #print(ent1)
+  #print(ent2)
   
-  ggsave(ent1, file = paste(plot_folder, savePrefix, "NgramBoxPlot.eps", sep = ""))
-  ggsave(ent2, file = paste(plot_folder, savePrefix, "NgramDensityPlot.eps", sep = ""))
+  ggsave(ent1, file = paste(plot_folder, savePrefix, "NgramBoxPlot.tiff", sep = ""))
+  ggsave(ent1, file = paste(plot_folder, savePrefix, "NgramBoxPlot.png", sep = ""))
+  #ggsave(ent2, file = paste(plot_folder, savePrefix, "NgramDensityPlot.tiff", sep = ""))
   
   return(list(Ngram, CNgram, ent_plot))
 } 
@@ -134,9 +135,9 @@ createEntropyPlots <- function(data_string, densityTitle, boxplotTitle, savePref
     geom_boxplot() + 
     scale_fill_manual(values=cbbPalette)  + 
     theme(axis.text.x = element_text(size=12), 
-          axis.title = element_text(size=14),
+          axis.title.x = element_text(size=14),
           axis.text.y = element_text(size=12),
-          axis.title = element_text(size=14),
+          axis.title.y = element_text(size=14),
           panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
           panel.background = element_rect(fill = "white"),
           legend.position="none") + 
@@ -144,12 +145,13 @@ createEntropyPlots <- function(data_string, densityTitle, boxplotTitle, savePref
     ylab("Entropy") +
     ggtitle(boxplotTitle)
   
-  ent2 = ggplot(ent_plot, aes(x=value, group = variable, fill = variable)) + geom_density(alpha = .5) + xlab("entropy") + scale_fill_manual(values=cbbPalette) + ggtitle(densityTitle)
+  #ent2 = ggplot(ent_plot, aes(x=value, group = variable, fill = variable)) + geom_density(alpha = .5) + xlab("entropy") + scale_fill_manual(values=cbbPalette) + ggtitle(densityTitle)
   #print(ent1)
   #print(ent2)
   
-  ggsave(ent1, file = paste(plot_folder, savePrefix, "LSTMBoxPlot.eps", sep = ""))
-  ggsave(ent2, file = paste(plot_folder, savePrefix, "LSTMDensityPlot.eps", sep = ""))
+  ggsave(ent1, file = paste(plot_folder, savePrefix, "LSTMBoxPlot.tiff", sep = ""))
+  ggsave(ent1, file = paste(plot_folder, savePrefix, "LSTMBoxPlot.png", sep = ""))
+  #ggsave(ent2, file = paste(plot_folder, savePrefix, "LSTMDensityPlot.tiff", sep = ""))
   
   return(list(Ngram, CNgram, Lstm, ent_plot))
 } 
@@ -208,11 +210,12 @@ createLSTMCompare <- function(lstm1, lstm2, ngram1, ngram2, group1, group2, boxp
   combinedfull <- rbind(ncompare1, ncompare2, lcompare1, lcompare2)
   p1 <- ggplot(combined, aes(factor(language), entropy))
   
-  p2 <- ggplot(combined, aes(x = entropy, group = factor(language))) + geom_density(alpha = .5, aes(fill=language)) + xlab("entropy") +  scale_fill_manual(values=cbbPalette) + ggtitle(boxplotTitle)
-  print(p1)
-  print(p2)
-  ggsave(p1, file =paste(plot_folder, savePrefix, "LSTMBoxPlot.eps", sep = ""))
-  ggsave(p2, file =paste(plot_folder, savePrefix, "LSTMDensityPlot.eps", sep = ""))
+  #p2 <- ggplot(combined, aes(x = entropy, group = factor(language))) + geom_density(alpha = .5, aes(fill=language)) + xlab("entropy") +  scale_fill_manual(values=cbbPalette) + ggtitle(boxplotTitle)
+  #print(p1)
+  #print(p2)
+  ggsave(p1, file =paste(plot_folder, savePrefix, "LSTMBoxPlot.tiff", sep = ""))
+  ggsave(p1, file =paste(plot_folder, savePrefix, "LSTMBoxPlot.png", sep = ""))
+  #ggsave(p2, file =paste(plot_folder, savePrefix, "LSTMDensityPlot.tiff", sep = ""))
 }
 
 combinedBoxplots <- function(ent_plot1, ent_plot2, savePrefix)
@@ -239,9 +242,9 @@ combinedBoxplots <- function(ent_plot1, ent_plot2, savePrefix)
     geom_boxplot() + 
     scale_fill_manual(values=cbbPalette)  + 
     theme(axis.text.x = element_text(size=12, face = "bold"), 
-          axis.title = element_text(size=14),
+          axis.title.x = element_text(size=14),
           axis.text.y = element_text(size=12),
-          axis.title = element_text(size=14),
+          axis.title.y = element_text(size=14),
           panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
           panel.background = element_rect(fill = "white"),
           legend.position="none") + 
@@ -249,7 +252,8 @@ combinedBoxplots <- function(ent_plot1, ent_plot2, savePrefix)
     ylab("Entropy") +
     ggtitle(boxplotTitle)
   print(p1)
-  ggsave(p1, file =paste(plot_folder, savePrefix, "LSTMBoxPlot.eps", sep = ""), width = 19.05, height = 13.2, dpi = 600, units = "cm")
+  ggsave(p1, file =paste(plot_folder, savePrefix, "LSTMBoxPlot.tiff", sep = ""), width = 19.05, height = 13.2, dpi = 600, units = "cm")
+  ggsave(p1, file =paste(plot_folder, savePrefix, "LSTMBoxPlot.png", sep = ""), width = 19.05, height = 13.2, dpi = 600, units = "cm")
 }
 
 loadLSTM <- function(data_string, lang)
