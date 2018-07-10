@@ -14,7 +14,7 @@ These scripts depend on many supporting R libraries - a script to install all ne
 installLibraries.R
 
 Second, you will need to download the final processed Zipf and model result data.  These are too large to be hosted on
-GitHub and can be found:
+GitHub and can be found at the following Dropbox links.  (NOTE on the data:  The Penn Treebank parse trees requires a fee to access.  In the spirit of providing data for a direct replication, we have included a version with only our metadata labels and the actual labels have been removed.)  
 
 (TODO Zipf Download) = Download and unzip to CodeNLPReplication/NgramData
   
