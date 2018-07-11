@@ -1,0 +1,116 @@
+---
+title: "Code Completion Experiment"
+output:
+  html_document:
+    df_print: paged
+---
+```{r "setup", include=FALSE}
+require("knitr")
+#You will need to specify your own root directory
+opts_knit$set(root.dir = "/data/ccasal/CodeNLPReplication/CompletionExperiment/")
+```
+
+Some plots and mixed models comparing MRR performance on open category tokens only using
+Vincent's nested cache model.  Looking at the coefficient, it looks like switching to the open
+category tokens only nets a 3.5% improvement on average MRR in a file (on the open categories).
+```{r}
+library(sqldf)
+library(effsize)
+library(ggplot2)
+library(GGally)
+library(reshape2)
+library(lme4)
+library(MuMIn) #Mixed effects R squared
+#Note: make sure to set your R working directory to the output directory where the results are stored.
+
+#Full Sized Data Set:
+setwd("/data/ccasal/CodeNLPRevisions/")
+print(getwd())
+source("./RScripts/OpenCatPlotHelper.R")
+
+full_model <- read.csv("./mrr_full.csv", header=TRUE, sep=",")
+open_cat_model <- read.csv("./mrr_open.csv", header=TRUE, sep=",")
+
+
+stopifnot(full_model$Total_Tokens != full_model$Predicted_Tokens)
+stopifnot(open_cat_model$Total_Tokens == open_cat_model$Predicted_Tokens)
+
+full_model$File <- as.character(full_model$File)
+open_cat_model$File <- as.character(open_cat_model$File)
+
+full_model$ID <- sapply(full_model$File, basename)
+open_cat_model$ID <- sapply(open_cat_model$File, basename)
+
+full_model$project <- sapply(full_model$File, getProject)
+open_cat_model$project <- sapply(open_cat_model$File, getProject)
+
+combined <- sqldf("SELECT full_model.ID, full_model.project, full_model.MRR as Full_MRR, open_cat_model.MRR as Open_MRR, full_model.Total_Tokens as TT, full_model.Predicted_Tokens as PT, open_cat_model.Predicted_Tokens as PT_Check FROM full_model INNER JOIN open_cat_model on full_model.ID = open_cat_model.ID")
+
+stopifnot(combined$PT == combined$PT_Check)
+
+t.test(combined$Full_MRR, combined$Open_MRR, paired = TRUE, alternative = "less")
+cohen.d(combined$Full_MRR, combined$Open_MRR, paired = TRUE)
+
+c_plot <- melt(combined[,c("ID", "Full_MRR", "Open_MRR")], id.vars = c("ID"))
+
+# compareBox <- ggplot(c_plot, aes(x = variable, y = value, fill = variable)) + geom_boxplot()
+# compareViolin <- ggplot(c_plot, aes(x = variable, y = value, fill = variable)) + geom_violin()
+# 
+# print(compareBox)
+# print(compareViolin)
+# ggsave(compareBox, file = "./Plots/CompletionBox.tiff", height = 13.2, width = 19.05, units = 'cm', dpi = 600)
+# ggsave(compareBox, file = "./Plots/CompletionBox.png", height = 13.2, width = 19.05, units = 'cm', dpi = 600)
+# 
+# ggsave(compareViolin, file = "./Plots/CompletionViolin.tiff", height = 13.2, width = 19.05, units = 'cm', dpi = 600)
+# ggsave(compareViolin, file = "./Plots/CompletionViolin.png", height = 13.2, width = 19.05, units = 'cm', dpi = 600)
+drawMRRBoxplot(c_plot, "", "Average File MRR", "./Plots/CompletionBox.tiff")
+drawMRRBoxplot(c_plot, "", "Average File MRR", "./Plots/CompletionBox.png")
+
+drawMRRViolin(c_plot, "", "Average File MRR", "./Plots/CompletionViolin.tiff")
+drawMRRViolin(c_plot, "", "Average File MRR", "./Plots/CompletionViolin.png")
+
+ggpairs(combined[,c("Full_MRR", "Open_MRR", "TT", "PT")])
+
+full_model$label <- "FULL"
+open_cat_model$label <- "OPEN_ONLY"
+
+open_cat_model$Total_Tokens <- full_model$Total_Tokens
+
+modelCombined <- rbind(full_model, open_cat_model)
+
+modelMRR <- lm(MRR ~ label + log(Total_Tokens) + log(Predicted_Tokens), data = modelCombined)
+
+modelMRR2 <- lm(MRR ~ label + log(Total_Tokens) + log(Predicted_Tokens) + factor(project), data = modelCombined)
+
+mixedMRR <- lmer(MRR ~ label + log(Total_Tokens)+ log(Predicted_Tokens)  + (1|ID), data = modelCombined, REML=FALSE)
+
+mixedMRR2 <- lmer(MRR ~ label + log(Total_Tokens)+ log(Predicted_Tokens)  + (1|project), data = modelCombined, REML=FALSE)
+
+mixedMRR3 <- lmer(MRR ~ label + log(Total_Tokens)+ log(Predicted_Tokens)  + (1|project) + (1|ID), data = modelCombined, REML=FALSE)
+
+mixedMRRBase <- lmer(MRR ~ log(Total_Tokens)+ log(Predicted_Tokens) + (1|ID), data = modelCombined, REML=FALSE)
+
+summary(mixedMRR)
+anova(mixedMRRBase, mixedMRR)
+anova(mixedMRR, modelMRR)
+
+r.squaredGLMM(mixedMRR)
+
+hex_plot <- ggplot(data=combined,aes(x = Full_MRR, y = Open_MRR))+
+  geom_hex()+
+  theme(axis.text.x = element_text(size=20), 
+        axis.title.x = element_text(size=20),
+        axis.text.y = element_text(size=20),
+        axis.title.y = element_text(size=20),
+        legend.text = element_text(size=20),
+        legend.title = element_text(size=20),
+        panel.background = element_rect(fill = "white")) + 
+  #scale_fill_gradientn(colours=c("green","black"),name = "Frequency",na.value=NA) +
+  scale_fill_gradientn(colors=c("#269441","black"),name = "Frequency",na.value=NA)+
+  #scale_fill_gradientn(colors=c("#91d288","black"),name = "Frequency",na.value=NA)+
+  xlab("MRR (Full) File Accuracy")+
+  ylab("MRR (Open) File Accuracy")+ 
+  geom_abline(slope = 1, size = 2)#+
+  ggsave(hex_plot, file = "./Plots/CompletionAccuracyComparison.tiff", height = 13.2, width = 19.05, units = 'cm', dpi = 600)
+  ggsave(hex_plot, file = "./Plots/CompletionAccuracyComparison.png", height = 13.2, width = 19.05, units = 'cm', dpi = 600)
+```
