@@ -18,14 +18,14 @@ source(file="./EntropyModel/LSTMHelperFunctions.r")
 #Read and filter the Englisth tree ngram/lstm data.  Assumes that the last column is the entropy from the lstm/ngram/etc.
 readAndFilterEngTree <- function(filename, col_names)
 {
-  b = read.csv(filename, header=TRUE)
+  b = read.csv(filename, header=FALSE)
   colnames(b) = col_names
   stopifnot(ncol(b) == 3 || ncol(b) == 5)
   b$token = as.character(b$token)
+  b = b[complete.cases(b),]
   #b = b[b$token != "(" & b$token != ")" & b$token != "<eos>" & b$token != ")<eos>(",]
   #b = sqldf("SELECT * FROM b WHERE token not in ts")
   b = b[b$token_type == 'WORD' | b$token_type == 'STOPWORD' | b$token_type == 'PUNCT',]
-  b = b[complete.cases(b),]
   print(summary(b[,col_names[ncol(b)]]))
   return(b)
 }
@@ -34,14 +34,14 @@ readAndFilterEngTree <- function(filename, col_names)
 readAndFilterJavaTree <- function(filename, col_names)
 {
   #browser()
-  j = read.csv(filename, header=TRUE)
+  j = read.csv(filename, header=FALSE)
   colnames(j) = col_names
   stopifnot(ncol(j) == 3 || ncol(j) == 5)
   j$token <- as.character(j$token)
+  j = j[complete.cases(j),]
   jTest = j[j$token != "(" & j$token != ")" & j$token != "<eos>"& j$token != ")<eos>(" & !startsWith(j$token, "#"),]
   j = j[j$token_type == 'WORD' | j$token_type == 'STOPWORD' | j$token_type == 'PUNCT',]
   stopifnot(nrow(j) == nrow(jTest))
-  j = j[complete.cases(j),]
   print(summary(j[,col_names[ncol(j)]]))
   return(j)
 }
@@ -98,6 +98,7 @@ b2_full$cache_entropy <- b3_full$cache_entropy
 b2$language <- eng_label_simp
 b2_full$language <- eng_label
 
+#Wilcox tests for the cache effect and effects between including/not including the full range of types.
 b_all <- b2
 printWilcox(b_all$ngram_entropy, b_all$cache_entropy, "Eng Tokens in AST Simple (Ngram)", "Eng Tokens in AST Simple (Cache)", TRUE)
 printWilcox(b2_full$ngram_entropy, b2_full$cache_entropy, "Eng Tokens in AST Full (Ngram)", "Eng Tokens in AST Full (Cache)", TRUE)
@@ -133,7 +134,7 @@ j$language <- java_label
 j2$cache_entropy <- j3$cache_entropy
 j2$language <- java_label
 
-#Problem is this isn't directly comparable with brown again... (oh well)
+
 j_all <- j2
 printWilcox(j_all$ngram_entropy, j_all$cache_entropy, "Java Tokens in AST (Ngram)", "Java Tokens in AST (Cache)", TRUE)
 j_all_plot <- j_all[,c("token", "ngram_entropy" ,"cache_entropy",  "language")]
@@ -144,9 +145,6 @@ colnames(j_all_plot) <- c("token", "ngram_entropy" ,"cache_entropy",  "language"
 colnames(b_all_plot)<- c("token", "ngram_entropy" ,"cache_entropy",  "language")
 colnames(b_all_full_plot)<- c("token", "ngram_entropy" ,"cache_entropy",  "language")
 
-#Buggy
-#lstm_den <- ggplot(bc_compare, aes(x = lstm_entropy, group = factor(language))) + geom_density(alpha = .5, aes(fill=language)) +  ggtitle("Comparison of Brown Parse, Java AST Names (LSTM)")
-#lstm_den_no_out <- lstm_den + coord_cartesian(ylim = ylim1*1.05)
 
 #Full comparison
 bc_full_compare <- rbind(j_all_plot, b_all_plot, b_all_full_plot)
@@ -182,7 +180,7 @@ drawLSTMBoxplot(bc_lstm_compare_med, "", "LSTM Entropy (Medium)", "./Plots/JavaV
 drawLSTMBoxplotCapped(bc_lstm_compare_med, "", "LSTM Entropy (Medium)", "./Plots/JavaVsBrownTreeBoxplotMed(LSTM).tiff")
 drawLSTMBoxplotCapped(bc_lstm_compare_med, "", "LSTM Entropy (Medium)", "./Plots/JavaVsBrownTreeBoxplotMed(LSTM).png")
 
-
+#Ngram Wilcox comparisons
 printWilcox(j_all_plot$ngram_entropy, b_all_plot$ngram_entropy, "Java Tokens in Const. Parse (Ngram)", "Eng Tokens in Const. Parse Simple (Ngram)", FALSE)
 printWilcox(j_all_plot$cache_entropy, b_all_plot$cache_entropy, "Java Tokens in Const. Parse (Cache)", "Eng Tokens in Const. Parse Simple (Cache)", FALSE)
 
@@ -190,6 +188,7 @@ printWilcox(j_all_plot$ngram_entropy, b_all_full_plot$ngram_entropy, "Java Token
 printWilcox(j_all_plot$cache_entropy, b_all_full_plot$cache_entropy, "Java Tokens in Const. Parse (Cache)", "Eng Tokens in Const. Parse Full (Cache)", FALSE)
 
 
+#LSTM Wilcox comparisons
 printWilcox(j$lstm_entropy, b$lstm_entropy, "Java Tokens in Const. Parse (Lstm Small)", "Eng Tokens in Const. Parse Simple (Lstm Small)", FALSE)
 printWilcox(jMed$lstm_entropy, bMed$lstm_entropy, "Java Tokens in Const. Parse (Lstm Med)", "Eng Tokens in Const. Parse Simple (Lstm Med)", FALSE)
 

@@ -5,6 +5,7 @@ library(sqldf)
 
 #Definition for a colorblind friendly template.
 #http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/#a-colorblind-friendly-palette
+#Uses Black as a preference to lime green to make it stand out more (in contrast to the box plots where the black doesn't look as good.)
 cbbPalette <- c("#E69F00", "#56B4E9", "#009E73", "#CC79A7", "#0072B2", "#D55E00","#F0E442", "#000000", "#999999", "#a50026")
 #ColorBrewer
 #cbbPalette <- c("#a50026", "#d73027", "#f46d43", "#fdae61", "#fee090", "#e0f3f8", "#abd9e9", "#74add1", "#4575b4", "#313695")
@@ -145,6 +146,7 @@ getDatasets <- function(inputFiles, labels = c())
      datasets[[i]] = readInCsv(inputFiles[i], getCsvLabel(inputFiles[i]))
      print(getCsvLabel(inputFiles[i]))
      print(paste("Token Count: ", sum(datasets[[i]]$count)))
+     print(paste("Unique ", getCsvLabel(inputFiles[i]), ": ", nrow(datasets[[i]])))
     }
   }
   else
@@ -154,6 +156,7 @@ getDatasets <- function(inputFiles, labels = c())
       datasets[[i]] = readInCsv(inputFiles[i], labels[i])
       print(labels[i])
       print(paste("Token Count: ", sum(datasets[[i]]$count)))
+      print(paste("Unique ", labels[i], ": ", nrow(datasets[[i]])))
     }
   }
   return(datasets)
@@ -185,7 +188,9 @@ buildIndepentRankFreqRetaining <- function(inputFiles, label)
 }
 
 #Produce a log-scaled normalized Ngram frequency plot and save it to outputFile.
-generateNormalizedFreqPlot <- function(datasets, outputFile, legend_labels = c(), plot_title = "")
+#Use legend_labels to rearrange the order in which the labels appear in the legend,
+#but not their colors.
+generateNormalizedFreqPlot <- function(datasets, outputFiles, legend_labels = c(), plot_title = "")
 {
   combined = ldply(datasets, data.frame)
   freq_plot = ggplot(combined, aes(x=ID, y=percent, color = group)) + geom_point(size = .5)  + scale_x_log10() + xlab("Rank ID") + ggtitle(plot_title) + scale_y_log10()
@@ -206,7 +211,10 @@ generateNormalizedFreqPlot <- function(datasets, outputFile, legend_labels = c()
           panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
           panel.background = element_rect(fill = "white"))
   #print(freq_plot)
-  ggsave(freq_plot, file=outputFile, height = 13.2, width = 19.05, units = 'cm', dpi = 600)
+  for(outputFile in outputFiles)
+  {
+    ggsave(freq_plot, file=outputFile, height = 13.2, width = 19.05, units = 'cm', dpi = 600)
+  }
   return(freq_plot)
 }
 
