@@ -29,9 +29,9 @@ python Freq.py ./LSTM_data/shakespeare .*.txt.tokens ./NgramData/SPUnigrams.csv 
 python Freq.py ./LSTM_data/shakespeare .*.txt.tokens ./NgramData/SPBigrams.csv 2
 python Freq.py ./LSTM_data/shakespeare .*.txt.tokens ./NgramData/SPTrigrams.csv 3
 #Recipes
-python Freq.py ./LSTM_data/Recipes .*.tokens ./NgramData/RecipeUnigrams.csv 1
-python Freq.py ./LSTM_data/Recipes .*.tokens ./NgramData/RecipeBigrams.csv 2
-python Freq.py ./LSTM_data/Recipes .*.tokens ./NgramData/RecipeTrigrams.csv 3
+python Freq.py ./LSTM_data/recipes .*.tokens ./NgramData/RecipeUnigrams.csv 1
+python Freq.py ./LSTM_data/recipes .*.tokens ./NgramData/RecipeBigrams.csv 2
+python Freq.py ./LSTM_data/recipes .*.tokens ./NgramData/RecipeTrigrams.csv 3
 #CommitMessages (Ensure we build the zipf plots only of the sample)
 python copyZipfSample.py LSTM_data/CommitMessagesSmall *.txt.tokens LSTM_data/CommitMessagesSmall/selectedFiles
 python Freq.py ./LSTM_data/CommitMessagesSmall/selectedFiles .*.txt.tokens ./NgramData/CMSmallUnigrams.csv 1

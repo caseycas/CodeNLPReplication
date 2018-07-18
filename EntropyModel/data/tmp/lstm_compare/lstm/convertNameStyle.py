@@ -82,6 +82,7 @@ for log_name, csv_name in nameMap.iteritems():
             if("_nt_" not in csv_name):
                 writer.writerow(["<start>", "NA"]) #Account for the shift
                 #if(log_name != "c_nameslog.txt"): #C had a 1 token first line = only shifts 1 (this is no longer true?
+            if(log_name != "haskell_no_collapse_nameslog.txt"): #Haskell has a shift of 1
                 writer.writerow(["<start>", "NA"])
             priorline = in_file.readline()
             currentline = in_file.readline()

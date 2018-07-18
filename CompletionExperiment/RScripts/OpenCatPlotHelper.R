@@ -39,6 +39,3 @@ drawMRRViolin <- function(data, title, ylabel, output_file)
   print(plot_out)
   ggsave(plot_out, file = output_file, height = 13.2, width = 19.05, units = 'cm', dpi = 600)
 }
-
-#compareBox <- ggplot(c_plot, aes(x = variable, y = value, fill = variable)) + geom_boxplot()
-#compareViolin <- ggplot(c_plot, aes(x = variable, y = value, fill = variable)) + geom_violin()

@@ -5,3 +5,8 @@
 *.eps
 *.tokens
 *.metadata
+*.pyc
+*.zip
+AST_out
+PennTreebank
+./EntropyModel/data/*

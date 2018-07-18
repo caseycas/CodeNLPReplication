@@ -2,7 +2,7 @@ import argparse
 import os
 import sys
 
-parser = argparse.ArgumentParser(description="Generate scripts to link/copy to the tensorflow and kenlm libaries.") 
+parser = argparse.ArgumentParser(description="Generate scripts to link/copy data into the model running directories/do any preprocessing.") 
 parser.add_argument("src_dir", help = "Location of the src data directory with the lexed corpora.", action="store", type=str)
 parser.add_argument("ngram_out_dir",help = "Location of of the data directories for the ngram models.", action="store", type=str)
 parser.add_argument("lstm_out_dir",help = "Location of of the data directories for the ptb lstm models.", action="store", type=str)

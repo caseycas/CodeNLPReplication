@@ -7,7 +7,7 @@ output:
 ```{r "setup", include=FALSE}
 require("knitr")
 #You will need to specify your own root directory
-opts_knit$set(root.dir = "/data/ccasal/CodeNLPReplication/CompletionExperiment/")
+opts_knit$set(root.dir = "/data/ccasal/CodeNLPRevisions/")
 ```
 
 Some plots and mixed models comparing MRR performance on open category tokens only using
@@ -21,6 +21,7 @@ library(GGally)
 library(reshape2)
 library(lme4)
 library(MuMIn) #Mixed effects R squared
+library(stargazer)
 #Note: make sure to set your R working directory to the output directory where the results are stored.
 
 #Full Sized Data Set:
@@ -77,6 +78,10 @@ open_cat_model$label <- "OPEN_ONLY"
 open_cat_model$Total_Tokens <- full_model$Total_Tokens
 
 modelCombined <- rbind(full_model, open_cat_model)
+#The distributions is long tailed, removed outliers
+#Outlier removal seems to fix the QQ plot problem pretty well
+modelCombined$MRR[modelCombined$MRR %in% boxplot.stats(modelCombined$MRR)$out] = NA
+
 
 modelMRR <- lm(MRR ~ label + log(Total_Tokens) + log(Predicted_Tokens), data = modelCombined)
 
@@ -93,8 +98,12 @@ mixedMRRBase <- lmer(MRR ~ log(Total_Tokens)+ log(Predicted_Tokens) + (1|ID), da
 summary(mixedMRR)
 anova(mixedMRRBase, mixedMRR)
 anova(mixedMRR, modelMRR)
+vif(modelMRR)
+vif(mixedMRR)
 
-r.squaredGLMM(mixedMRR)
+print(r.squaredGLMM(mixedMRR))
+
+stargazer(modelMRR, mixedMRR, title="Results", align=TRUE)
 
 hex_plot <- ggplot(data=combined,aes(x = Full_MRR, y = Open_MRR))+
   geom_hex()+
