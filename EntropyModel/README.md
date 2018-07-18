@@ -1,6 +1,12 @@
 # Basic Replication
 
-To simply regenerate plots and values as seen in the paper from the final processed data entropy scores, you can
+## Data
+
+Make sure you first download the basic replication data as described here: https://github.com/caseycas/CodeNLPReplication#basic-replication-data
+
+## Instructions
+
+To create the plots and statistica values as seen in the paper from the final processed data entropy scores, you can
 run these the following R scripts:
 
 EngCodePaperZipfs.R - All Zipf related Plots and values:
@@ -13,9 +19,8 @@ These scripts depend on many supporting R libraries - a script to install all ne
 
 installLibraries.R
 
-Second, you will need to download the final processed Zipf and model result data.  These are too large to be hosted on
-GitHub and can be found at the following Dropbox links.  (NOTE on the data:  The Penn Treebank parse trees requires a fee to access.  In the spirit of providing data for a direct replication, we have included a version with only our metadata labels and the actual labels have been removed.)  
+Finally, after running Lstm_Ngram.r, a convenience script to generate some (but not all) of the .tex tables seen in the paper can be run with:
 
-(TODO Zipf Download) = Download and unzip to CodeNLPReplication/NgramData
-  
-(TODO Entropy Download) = Download and unzip to CodeNLPReplication/EntropyModel/data
+```
+python2.7 generateTexWilcoxTables.py lstm_ngram_no_collapse_stats.txt lstm_ngram_no_collapse_stats.txt
+```
