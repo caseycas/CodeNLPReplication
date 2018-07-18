@@ -52,6 +52,6 @@ Generating your own training/test corpora from the original files involves lexin
 Details on installing kenlm can be found here: https://github.com/kpu/kenlm
 Details on installing tensorflow: https://www.tensorflow.org/install/
 
-Some shell scripts have been provided to streamline the steps of the experiments, but if you'd like to do a full replication, please contact the authors at:
+Some shell scripts have been provided to streamline the steps of the experiments, but if you'd like to do a full replication, or run into issues/errors while trying out the basic replication, please contact the authors at:
 
 ccasal@ucdavis.edu
