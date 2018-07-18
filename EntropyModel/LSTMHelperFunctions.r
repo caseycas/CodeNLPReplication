@@ -96,6 +96,70 @@ createEntropyPlotsNoLSTM <- function(data_string, densityTitle, boxplotTitle, sa
   return(list(Ngram, CNgram, ent_plot))
 } 
 
+
+#Alternative version of createEntropyPlots that allows different kinds of data strings.
+createMultiEntropyPlots <- function(data_strings, densityTitle, boxplotTitle, savePrefix)
+{
+  #print(paste(data_folder, "ngram/", data_string, "_no_cache_entropy.csv", sep = ""))
+  Ngram = read.csv(paste(data_folder, "ngram/", data_strings[1], "_no_cache_entropy.csv", sep = ""), header=FALSE)
+  colnames(Ngram) = c("file", "id", "token", "ngram_entropy")
+  Ngram$ngram_entropy = -Ngram$ngram_entropy
+  
+  CNgram = read.csv(paste(data_folder, "ngram/", data_strings[2], "_cache_entropy.csv", sep = ""), header=FALSE)
+  colnames(CNgram) = c("file", "id", "token", "cache_entropy")
+  CNgram$cache_entropy = -CNgram$cache_entropy
+  
+  
+  Lstm = read.csv(paste(data_folder, "lstm/", data_strings[3], "_entropy.csv", sep = ""))
+  #Lstm = Lstm[!is.na(Lstm$lstm_entropy),] #I'm accidently adding an extra eos token at the end.  Remove it just in case.
+  colnames(Lstm) = c("token", "lstm_entropy")
+  Lstm = Lstm[Lstm$token != "<eos>",]
+  ent =  Lstm
+  ent$ngram_entropy = Ngram$ngram_entropy
+  ent$cache_entropy = CNgram$cache_entropy
+  
+  #I'm switching from a paired to unpaired test because the lstm model doesn't exactly match the cache and ngram models
+  printWilcox(ent$lstm_entropy, ent$ngram_entropy, paste(data_string, "_lstm", sep= ""), paste(data_string, "_ngram", sep=""),FALSE)
+  
+  printWilcox(ent$cache_entropy, ent$ngram_entropy, paste(data_string, "_cache", sep= ""), paste(data_string, "_ngram", sep=""),TRUE)
+  #Produce an unpaired result as well in case we need the consistency.
+  printWilcox(ent$cache_entropy, ent$ngram_entropy, paste(data_string, "_cache", sep= ""), paste(data_string, "_ngram", sep=""),FALSE)
+  
+  #I'm switching from a paired to unpaired test because the lstm model doesn't exactly match the cache and ngram models
+  printWilcox(ent$lstm_entropy, ent$cache_entropy, paste(data_string, "_lstm", sep= ""), paste(data_string, "_cache", sep=""),FALSE)
+  #print(wilcox.test(ent$lstm_entropy, ent$cache_entropy, alternative = 'less', paired=TRUE))
+  #print(cohensD(ent$lstm_entropy, ent$cache_entropy, paired=TRUE))
+  #print(cohensD(ent$lstm_entropy, ent$cache_entropy))
+  
+  ent_plot = melt(ent)
+  ent1 = ggplot(ent_plot, aes(variable, value, fill = variable)) +
+    geom_boxplot() + 
+    scale_fill_manual(values=cbbPalette)  + 
+    theme(axis.text.x = element_text(size=12), 
+          axis.title.x = element_text(size=14),
+          axis.text.y = element_text(size=12),
+          axis.title.y = element_text(size=14),
+          panel.grid.major.y = element_line(colour = "#f1f1f1", size = 1),
+          panel.background = element_rect(fill = "white"),
+          legend.position="none") + 
+    xlab("Language Model") + 
+    ylab("Entropy") +
+    ggtitle(boxplotTitle)
+  
+  #ent2 = ggplot(ent_plot, aes(x=value, group = variable, fill = variable)) + geom_density(alpha = .5) + xlab("entropy") + scale_fill_manual(values=cbbPalette) + ggtitle(densityTitle)
+  #print(ent1)
+  #print(ent2)
+  
+  ggsave(ent1, file = paste(plot_folder, savePrefix, "LSTMBoxPlot.tiff", sep = ""))
+  ggsave(ent1, file = paste(plot_folder, savePrefix, "LSTMBoxPlot.png", sep = ""))
+  #ggsave(ent2, file = paste(plot_folder, savePrefix, "LSTMDensityPlot.tiff", sep = ""))
+  
+  return(list(Ngram, CNgram, Lstm, ent_plot))
+} 
+
+
+
+
 createEntropyPlots <- function(data_string, densityTitle, boxplotTitle, savePrefix)
 {
   #browser()
@@ -267,7 +331,7 @@ loadLSTM <- function(data_string, lang)
 }
 
 
-drawNgramBoxplot <- function(data, title, ylabel, output_file)
+drawNgramBoxplot <- function(data, title, ylabel, output_file, yAxisLim = c())
 {
   plot_out = ggplot(data, aes(factor(language), ngram_entropy)) + 
     geom_boxplot(aes(fill=language)) + 
@@ -281,10 +345,17 @@ drawNgramBoxplot <- function(data, title, ylabel, output_file)
           legend.position="none") +
     ylab(ylabel) + 
     ggtitle(title)
+  
+  if(length(yAxisLim) == 2)
+  {
+    plot_out = plot_out + ylim(yAxisLim)
+  }
+  
   ggsave(plot_out, file = output_file, height = 13.2, width = 19.05, units = 'cm', dpi = 600)
+  return(plot_out)
 }
 
-drawCacheBoxplot <- function(data, title, ylabel, output_file)
+drawCacheBoxplot <- function(data, title, ylabel, output_file, yAxisLim = c())
 {
   plot_out = ggplot(data, aes(factor(language), cache_entropy)) + 
     geom_boxplot(aes(fill=language)) + 
@@ -298,11 +369,16 @@ drawCacheBoxplot <- function(data, title, ylabel, output_file)
           legend.position="none") +
     ylab(ylabel) + 
     ggtitle(title)
+  if(length(yAxisLim) == 2)
+  {
+    plot_out = plot_out + ylim(yAxisLim)
+  }
   ggsave(plot_out, file = output_file, height = 13.2, width = 19.05, units = 'cm', dpi = 600)
+  return(plot_out)
 }
 
 
-drawLSTMBoxplot <- function(data, title, ylabel, output_file)
+drawLSTMBoxplot <- function(data, title, ylabel, output_file, yAxisLim = c())
 {
   plot_out = ggplot(data, aes(factor(language), lstm_entropy)) + 
     geom_boxplot(aes(fill=language)) +  
@@ -316,7 +392,12 @@ drawLSTMBoxplot <- function(data, title, ylabel, output_file)
           legend.position="none") +
     ylab(ylabel) + 
     ggtitle(title)
+  if(length(yAxisLim) == 2)
+  {
+    plot_out = plot_out + ylim(yAxisLim)
+  }
   ggsave(plot_out, file = output_file, height = 13.2, width = 19.05, units = 'cm', dpi = 600)
+  return(plot_out)
 }
 
 drawLSTMBoxplotCapped <- function(data, title, ylabel, output_file)
@@ -336,4 +417,5 @@ drawLSTMBoxplotCapped <- function(data, title, ylabel, output_file)
   ylim1 = boxplot.stats(data$lstm_entropy)$stats[c(1, 5)]
   plot_out_clip = plot_out +coord_cartesian(ylim = ylim1*1.05)
   ggsave(plot_out_clip,  file = output_file, height = 13.2, width = 19.05, units = 'cm', dpi = 600)
+  return(plot_out_clip)
 }
