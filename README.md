@@ -12,15 +12,18 @@ paper, you will need probably at least 15 GBs of space.  If you want to rerun al
 
 The files ZipfNgram.zip and EntropyData.zip are the final processed data.
 
+```
 ZipfNgram.zip - download and unzip into the top level directory of this repostiory.  It should put the files into a subdirectory called NgramData.
 
 EntropyData.zip - download and unzip inside the directory ./EntropyModel/data/
+```
 
 ## Raw Data
 
 The raw data files should be unzipped into the top level directory of this repository.
 
 These files are:
+```
 AST_out.zip
 CCorpus.zip
 ClojureCorpus.zip
@@ -33,11 +36,12 @@ EFLCorpus.zip
 SpecializedEnglishCorpus.zip
 German.zip
 Spanish.zip
+```
 
 *Note:  As the English consistutency parse trees are part of the Penn Treebank, we cannot freely provide
 this data.  If you have paid for access to the Penn Treebank, put your copy of the data in the top level directory.
 Likewise, in the final processed data, we have censored the original tokens that make up the parse trees and kept
-only a column of labels to distinguish between terminal and non terminals.
+only a column of labels to distinguish between terminal and non terminals.*
 
 # Basic Replication
 A description of how to quickly replicate the results of the paper can be found in [EntropyModel/README.md](https://github.com/caseycas/CodeNLPReplication/blob/master/EntropyModel/README.md)
