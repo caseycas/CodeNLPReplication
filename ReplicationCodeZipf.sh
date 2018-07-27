@@ -40,7 +40,7 @@ python Freq.py ./LSTM_data/haskell_no_collapse_name .*.hs.tokens ./NgramData/no_
 python Freq.py ./LSTM_data/clojure_no_collapse_name .*.clj.tokens ./NgramData/no_collapse/ClojureNameTrigrams.csv 3
 
 #Ensure we copy only from the sample.
-python copyZipfSample.py LSTM_data/diverse_java_small_no_collapse *.java.tokens LSTM_data/diverse_java_small_no_collapse/selectedFiles
+python copyZipfSample.py LSTM_data/diverse_java_small_no_collapse .java.tokens LSTM_data/diverse_java_small_no_collapse/selectedFiles
 python Freq.py ./LSTM_data/diverse_java_small_no_collapse/selectedFiles .*.java.tokens ./NgramData/no_collapse_small/DJavaUnigrams.csv 1
 python Freq.py ./LSTM_data/diverse_java_small_no_collapse/selectedFiles  .*.java.tokens ./NgramData/no_collapse_small/DJavaBigrams.csv 2
 python Freq.py ./LSTM_data/diverse_java_small_no_collapse/selectedFiles  .*.java.tokens ./NgramData/no_collapse_small/DJavaTrigrams.csv 3

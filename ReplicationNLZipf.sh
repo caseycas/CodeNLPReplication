@@ -28,12 +28,17 @@ python Freq.py ./LSTM_data/law .*.txt.tokens ./NgramData/LETrigrams.csv 3
 python Freq.py ./LSTM_data/shakespeare .*.txt.tokens ./NgramData/SPUnigrams.csv 1
 python Freq.py ./LSTM_data/shakespeare .*.txt.tokens ./NgramData/SPBigrams.csv 2
 python Freq.py ./LSTM_data/shakespeare .*.txt.tokens ./NgramData/SPTrigrams.csv 3
-#Recipes
+#Recipes (This was was already preprocessed in my local copy, swap with the commented version if you are doing this
+#in a replication to use only a subset of the tokens).
+#python copyZipfSample.py LSTM_data/recipes .txt.tokens LSTM_data/recipes/selectedFiles
+#python Freq.py ./LSTM_data/recipes/selectedFiles .*.txt.tokens ./NgramData/RecipeUnigrams.csv 1
+#python Freq.py ./LSTM_data/recipes/selectedFiles .*.txt.tokens ./NgramData/RecipeBigrams.csv 2
+#python Freq.py ./LSTM_data/recipes/selectedFiles .*.txt.tokens ./NgramData/RecipeTrigrams.csv 3
 python Freq.py ./LSTM_data/recipes .*.tokens ./NgramData/RecipeUnigrams.csv 1
 python Freq.py ./LSTM_data/recipes .*.tokens ./NgramData/RecipeBigrams.csv 2
 python Freq.py ./LSTM_data/recipes .*.tokens ./NgramData/RecipeTrigrams.csv 3
 #CommitMessages (Ensure we build the zipf plots only of the sample)
-python copyZipfSample.py LSTM_data/CommitMessagesSmall *.txt.tokens LSTM_data/CommitMessagesSmall/selectedFiles
+python copyZipfSample.py LSTM_data/CommitMessagesSmall .txt.tokens LSTM_data/CommitMessagesSmall/selectedFiles
 python Freq.py ./LSTM_data/CommitMessagesSmall/selectedFiles .*.txt.tokens ./NgramData/CMSmallUnigrams.csv 1
 python Freq.py ./LSTM_data/CommitMessagesSmall/selectedFiles .*.txt.tokens ./NgramData/CMSmallBigrams.csv 2
 python Freq.py ./LSTM_data/CommitMessagesSmall/selectedFiles .*.txt.tokens ./NgramData/CMSmallTrigrams.csv 3
