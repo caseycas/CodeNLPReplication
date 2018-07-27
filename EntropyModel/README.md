@@ -6,10 +6,10 @@ Make sure you first download the basic replication data as described here: https
 
 ## Instructions
 
-To create the plots and statistica values as seen in the paper from the final processed data entropy scores, you can
+To create the plots and statistical test results described in the paper from the final processed data, you can
 run these the following R scripts:
 
-EngCodePaperZipfs.R - All Zipf related Plots and values:
+EngCodePaperZipfs.R - All Zipf related Plots and values.
 Lstm_Ngram.r - Language model entropy boxplots and distribution comparison with the exception of the parse tree experiment.
 ParseTreeLSTMUnmatched.R - Language model entropy boxplots and distribution comparison for the parse tree experiment.
 
